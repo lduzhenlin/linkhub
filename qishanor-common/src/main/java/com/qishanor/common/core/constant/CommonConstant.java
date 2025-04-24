@@ -1,10 +1,10 @@
-package com.qishanor.admin.entity;
+package com.qishanor.common.core.constant;
 
 
 /**
  *常量
  */
-public interface CommonConstants {
+public interface CommonConstant {
 
     /**
      * header 中租户ID

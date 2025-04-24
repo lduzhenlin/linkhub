@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>书签导航系统</title>
+  <title>LinkHub导航系统</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <#--  消息弹框-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <style>
     :root {
       --bg-dark: #1a1b1e;
@@ -55,6 +61,9 @@
     .light .card-shadow {
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
+
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body class="bg-theme text-theme min-h-screen transition-colors duration-200">
@@ -64,37 +73,29 @@
       <div class="container mx-auto px-6 py-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <h1 class="text-xl font-bold text-purple-500">极速工具箱</h1>
+            <h1 class="text-xl font-bold text-purple-500">LinkHub</h1>
             <span class="text-theme-secondary">|</span>
-            <span class="text-theme-secondary text-sm">高效开发工具集成平台</span>
+            <span class="text-theme-secondary text-sm">高效导航集成平台</span>
           </div>
           <div class="flex items-center space-x-6">
             <div class="relative">
-              <input type="text" id="searchInput" placeholder="搜索工具..." 
+              <input type="text" id="searchInput" placeholder="搜索链接..."
                 class="w-80 px-4 py-1.5 pl-10 bg-card-theme rounded text-theme border border-theme focus:outline-none focus:border-purple-500 transition-colors duration-200">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
+              <i id="searchbtn" class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
             </div>
             <div class="flex items-center space-x-4">
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors" title="我的收藏">
-                <i class="fas fa-star"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors" title="消息通知">
-                <i class="fas fa-bell"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors" title="历史记录">
-                <i class="fas fa-history"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors" title="设置">
-                <i class="fas fa-cog"></i>
-              </button>
               <button id="themeToggle" class="text-theme-secondary hover:text-purple-500 transition-colors" title="切换主题">
-                <i class="fas fa-moon dark:hidden"></i>
-                <i class="fas fa-sun hidden dark:inline"></i>
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
               </button>
               <div class="h-4 w-px bg-theme-secondary opacity-20"></div>
-              <button class="px-4 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded text-sm transition-colors">
+              <button class="px-4 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded text-sm transition-colors" id="loginBtn">
                 登录
               </button>
+              <span id="userInfo" class="hidden text-theme-secondary text-sm cursor-pointer select-none">
+                <i class="fas fa-user mr-1"></i><span id="usernameDisplay"></span>
+                <button id="logoutBtn" onclick="handleLogout()" class="ml-2 text-xs text-purple-500 hover:text-purple-400">退出</button>
+              </span>
             </div>
           </div>
         </div>
@@ -104,24 +105,17 @@
     <!-- 分类导航 -->
     <nav class="bg-theme sticky top-0 z-10 border-b border-theme">
       <div class="container mx-auto px-6 py-2">
-        <div class="flex items-center space-x-2">
-          <button class="px-4 py-1.5 text-sm bg-purple-500 text-white rounded">全部工具</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">常用工具</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">我的收藏</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">JSON工具</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">编码加密</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">网络工具</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">时间日期</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">代码工具</button>
-          <button class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">文本处理</button>
+        <div id="navList" class="flex items-center space-x-2">
+          <!-- 分类列表将通过 JavaScript 动态生成 -->
         </div>
       </div>
     </nav>
 
     <!-- 主要内容区 -->
     <main class="flex-1 container mx-auto px-6 py-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <!-- 工具卡片 -->
+      <div id="linkList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- 工具卡片  有js动态生成-->
+        <a  href="https://www.baidu.com" target="_blank">
         <div class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
           <div class="flex items-start justify-between mb-2">
             <div class="flex items-center space-x-2">
@@ -141,66 +135,9 @@
           </div>
           <p class="text-xs text-theme-secondary line-clamp-2">JSON数据美化与验证工具，支持格式化、压缩、转义等功能</p>
         </div>
+        </a>
 
-        <div class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
-          <div class="flex items-start justify-between mb-2">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                <i class="fas fa-globe text-base text-blue-500"></i>
-              </div>
-              <h3 class="text-sm font-medium text-theme">HTTP请求测试</h3>
-            </div>
-            <div class="flex items-center space-x-1">
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openEditModal(this)" title="编辑">
-                <i class="fas fa-edit text-sm"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteModal(this)" title="删除">
-                <i class="fas fa-trash-alt text-sm"></i>
-              </button>
-            </div>
-          </div>
-          <p class="text-xs text-theme-secondary line-clamp-2">在线API接口调试工具，支持多种请求方式和参数设置</p>
-        </div>
 
-        <div class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
-          <div class="flex items-start justify-between mb-2">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                <i class="fas fa-clock text-base text-green-500"></i>
-              </div>
-              <h3 class="text-sm font-medium text-theme">时间转换</h3>
-            </div>
-            <div class="flex items-center space-x-1">
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openEditModal(this)" title="编辑">
-                <i class="fas fa-edit text-sm"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteModal(this)" title="删除">
-                <i class="fas fa-trash-alt text-sm"></i>
-              </button>
-            </div>
-          </div>
-          <p class="text-xs text-theme-secondary line-clamp-2">时间戳转换工具，支持多种格式和时区转换</p>
-        </div>
-
-        <div class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
-          <div class="flex items-start justify-between mb-2">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                <i class="fas fa-file-alt text-base text-red-500"></i>
-              </div>
-              <h3 class="text-sm font-medium text-theme">Base64编码</h3>
-            </div>
-            <div class="flex items-center space-x-1">
-              <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openEditModal(this)" title="编辑">
-                <i class="fas fa-edit text-sm"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteModal(this)" title="删除">
-                <i class="fas fa-trash-alt text-sm"></i>
-              </button>
-            </div>
-          </div>
-          <p class="text-xs text-theme-secondary line-clamp-2">Base64编码解码工具，支持文本和文件处理</p>
-        </div>
       </div>
     </main>
   </div>
@@ -216,6 +153,7 @@
       </div>
       <form id="editForm" class="p-6">
         <div class="space-y-4">
+          <input type="hidden" id="editLinkId"></input>
           <div>
             <label class="block text-sm text-theme mb-1">名称</label>
             <input type="text" id="editTitle" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入书签名称">
@@ -230,15 +168,7 @@
           </div>
           <div>
             <label class="block text-sm text-theme mb-1">分类</label>
-            <select id="editCategory" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors appearance-none">
-              <option value="">请选择分类</option>
-              <option value="常用工具">常用工具</option>
-              <option value="JSON工具">JSON工具</option>
-              <option value="编码加密">编码加密</option>
-              <option value="网络工具">网络工具</option>
-              <option value="时间日期">时间日期</option>
-              <option value="文本处理">文本处理</option>
-            </select>
+            <select id="editCategory" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors appearance-none"></select>
           </div>
           <div>
             <label class="block text-sm text-theme mb-1">图标</label>
@@ -296,7 +226,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-user text-theme-secondary"></i>
               </div>
-              <input type="text" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入用户名或邮箱">
+              <input type="tel" value="13345092258" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
             </div>
           </div>
           <div>
@@ -305,7 +235,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
+              <input type="password" value="1" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
               <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                 <i class="fas fa-eye"></i>
               </button>
@@ -316,7 +246,7 @@
               <input type="checkbox" class="w-4 h-4 bg-theme border-theme rounded text-purple-500 focus:ring-0 focus:ring-offset-0">
               <span class="text-sm text-theme-secondary">记住我</span>
             </label>
-            <button type="button" class="text-sm text-purple-500 hover:text-purple-400 transition-colors">忘记密码？</button>
+            <button type="button" onclick="openForgotPasswordModal()" class="text-sm text-purple-500 hover:text-purple-400 transition-colors">忘记密码？</button>
           </div>
           <button type="button" onclick="handleLogin()" class="w-full py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-md transition-colors">
             登录
@@ -345,21 +275,12 @@
         <!-- 注册表单 -->
         <form id="registerForm" class="space-y-6">
           <div>
-            <label class="block text-sm text-theme-secondary mb-2">用户名</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fas fa-user text-theme-secondary"></i>
-              </div>
-              <input type="text" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入用户名">
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm text-theme-secondary mb-2">邮箱</label>
+            <label class="block text-sm text-theme-secondary mb-2">手机号</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-envelope text-theme-secondary"></i>
               </div>
-              <input type="email" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入邮箱">
+              <input type="tel" id="tel" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
             </div>
           </div>
           <div>
@@ -368,7 +289,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
+              <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
               <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                 <i class="fas fa-eye"></i>
               </button>
@@ -380,7 +301,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请再次输入密码">
+              <input type="password" id="password1" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请再次输入密码">
               <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                 <i class="fas fa-eye"></i>
               </button>
@@ -397,6 +318,41 @@
             <span class="text-sm text-theme-secondary">已有账号？</span>
             <button type="button" onclick="switchToLogin()" class="text-sm text-purple-500 hover:text-purple-400 transition-colors ml-1">立即登录</button>
           </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 找回密码弹框 -->
+  <div id="forgotPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-card-theme rounded-lg w-[400px] relative">
+      <div class="p-8">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-medium text-theme">找回密码</h2>
+          <button onclick="closeForgotPasswordModal()" class="text-theme-secondary hover:text-theme transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="forgotPasswordForm" class="space-y-6">
+          <div>
+            <label class="block text-sm text-theme-secondary mb-2">手机号</label>
+            <input type="text" id="forgotPhone" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
+          </div>
+          <div>
+            <label class="block text-sm text-theme-secondary mb-2">验证码</label>
+            <div class="flex space-x-2">
+              <input type="text" id="forgotCode" class="flex-1 px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入验证码">
+              <button type="button" onclick="sendForgotCode()" class="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition-colors">获取验证码</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-theme-secondary mb-2">新密码</label>
+            <input type="password" id="forgotNewPassword" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入新密码">
+          </div>
+          <button type="button" onclick="handleForgotPassword()" class="w-full py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-md transition-colors">
+            重置密码
+          </button>
         </form>
       </div>
     </div>
@@ -437,7 +393,7 @@
           <div>
             <label class="block text-sm text-theme mb-1">分类名称</label>
             <input type="text" id="editCategoryName" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入分类名称">
-            <input type="hidden" id="oldCategoryName">
+            <input type="hidden" id="categoryId">
           </div>
         </div>
       </form>
@@ -463,7 +419,9 @@
           <p class="text-sm text-theme">确定要删除该分类吗？删除后无法恢复。</p>
         </div>
         <div class="bg-theme rounded p-4">
-          <p class="text-sm text-theme-secondary">分类名称：<span id="deleteCategoryName" class="text-theme"></span></p>
+          <p class="text-sm text-theme-secondary">分类名称：<span id="deleteCategoryName" class="text-theme"></span>
+            <span id="deleteCategoryId" class="hidden"></span>
+          </p>
         </div>
       </div>
       <div class="p-4 border-t border-theme flex justify-end space-x-2">
@@ -474,7 +432,7 @@
   </div>
 
   <!-- 悬浮按钮 -->
-  <div class="fixed right-6 bottom-6 flex flex-col space-y-3">
+  <div id="floatBtn" class="fixed right-6 bottom-6 flex flex-col space-y-3 hidden">
     <button onclick="openEditModal(null)" class="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="添加书签">
       <i class="fas fa-plus"></i>
     </button>
@@ -483,9 +441,17 @@
     </button>
   </div>
 
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script>
+    function toggleThemeIcon(theme){
+      if (theme === 'dark') {
+        $(themeToggle).find('.fa-moon').removeClass('hidden');
+        $(themeToggle).find('.fa-sun').addClass('hidden');
+      } else {
+        $(themeToggle).find('.fa-moon').addClass('hidden');
+        $(themeToggle).find('.fa-sun').removeClass('hidden');
+      }
+    }
     $(document).ready(function() {
       // 主题切换功能
       const htmlElement = document.documentElement;
@@ -496,6 +462,9 @@
       if (savedTheme) {
         htmlElement.classList.remove('dark', 'light');
         htmlElement.classList.add(savedTheme);
+
+        //切换主题图标
+        toggleThemeIcon(savedTheme)
       }
 
       // 切换主题
@@ -505,46 +474,53 @@
         const newTheme = isDark ? 'light' : 'dark';
         htmlElement.classList.add(newTheme);
         localStorage.setItem('theme', newTheme);
+
+        //切换主题图标
+        toggleThemeIcon(newTheme)
       });
 
-      // 搜索功能
-      $('#searchInput').on('input', function() {
-        const searchText = $(this).val().toLowerCase();
-        $('.tool-card').each(function() {
-          const title = $(this).find('h3').text().toLowerCase();
-          const description = $(this).find('p').text().toLowerCase();
-          if (title.includes(searchText) || description.includes(searchText)) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
-        });
+      //搜索
+      $('#searchBtn').on('click', handleSearch);
+      $('#searchInput').on('keydown', function(e) {
+        console.log("进来了")
+        if (e.key === 'Enter' || e.keyCode === 13) {
+          handleSearch();
+        }
       });
+      function handleSearch() {
+        const keyword = $('#searchInput').val().trim();
+        if (keyword) {
+          loadLinks(null,keyword)
+        } else {
+          toastr.warning('请输入搜索内容');
+        }
+      }
+
 
       // 收藏功能
-      $('.fa-star').on('click', function() {
-        $(this).toggleClass('far fas text-purple-500 text-theme-secondary');
-      });
+      // $('.fa-star').on('click', function() {
+      //   $(this).toggleClass('far fas text-purple-500 text-theme-secondary');
+      // });
 
-      // 分类筛选
+      // 分类点击筛选
       $('nav button').on('click', function() {
         $('nav button').removeClass('bg-purple-500 text-white').addClass('text-theme-secondary');
         $(this).removeClass('text-theme-secondary').addClass('bg-purple-500 text-white');
       });
 
       // 监听图标选择变化
-      $('#editIcon').on('change', function() {
-        const iconClass = $(this).val();
-        <#noparse>$('#selectedIcon').attr('class', `fas {{= iconClass}} text-purple-500`);</#noparse>
-      });
+      <#--$('#editIcon').on('change', function() {-->
+      <#--  const iconClass = $(this).val();-->
+      <#--  $('#selectedIcon').attr('class', `fas ${r'${iconClass}'} text-purple-500`);-->
+      <#--});-->
 
       // 监听颜色选择变化
-      $('#editColor').on('change', function() {
-        const colorClass = $(this).val();
-        const color = colorClass.replace('text-', 'bg-');
-        $('#selectedColor').attr('class', `w-3 h-3 {{= color}} absolute left-2.5 top-1/2 -translate-y-1/2 rounded-full`);
-        $('#selectedIcon').removeClass('text-purple-500 text-blue-500 text-green-500 text-red-500 text-yellow-500').addClass(colorClass);
-      });
+      <#--$('#editColor').on('change', function() {-->
+      <#--  const colorClass = $(this).val();-->
+      <#--  const color = colorClass.replace('text-', 'bg-');-->
+      <#--  $('#selectedColor').attr('class', `w-3 h-3 ${r'${color}'} absolute left-2.5 top-1/2 -translate-y-1/2 rounded-full`);-->
+      <#--  $('#selectedIcon').removeClass('text-purple-500 text-blue-500 text-green-500 text-red-500 text-yellow-500').addClass(colorClass);-->
+      <#--});-->
 
       // 修改登录按钮点击事件绑定
       $('button:contains("登录")').on('click', function(e) {
@@ -565,108 +541,261 @@
           closeRegisterModal();
         }
       });
+    });
 
-      // 添加 ESC 键关闭功能
-      $(document).on('keydown', function(e) {
-        if (e.key === 'Escape') {
-          closeLoginModal();
-          closeRegisterModal();
-        }
-      });
-
-      // 登录/注册相关函数
-      function openLoginModal() {
-        closeRegisterModal();
-        $('#loginModal').removeClass('hidden').addClass('flex');
-      }
-
-      function closeLoginModal() {
-        $('#loginModal').removeClass('flex').addClass('hidden');
-        $('#loginForm')[0].reset();
-      }
-
-      function togglePassword(button) {
-        const input = $(button).siblings('input');
-        const icon = $(button).find('i');
-        
-        if (input.attr('type') === 'password') {
-          input.attr('type', 'text');
-          icon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-          input.attr('type', 'password');
-          icon.removeClass('fa-eye-slash').addClass('fa-eye');
-        }
-      }
-
-      function handleLogin() {
-        const username = $('#loginForm input[type="text"]').val();
-        const password = $('#loginForm input[type="password"]').val();
-        const remember = $('#loginForm input[type="checkbox"]').is(':checked');
-        
-        if (!username || !password) {
-          alert('请填写完整的登录信息');
-          return;
-        }
-        
-        // 这里添加登录的后端交互逻辑
-        console.log('登录信息：', { username, password, remember });
-        
+    // 添加 ESC 键关闭功能
+    $(document).on('keydown', function(e) {
+      if (e.key === 'Escape') {
         closeLoginModal();
-      }
-
-      function openRegisterModal() {
-        closeLoginModal();
-        $('#registerModal').removeClass('hidden').addClass('flex');
-      }
-
-      function closeRegisterModal() {
-        $('#registerModal').removeClass('flex').addClass('hidden');
-        $('#registerForm')[0].reset();
-      }
-
-      function switchToLogin() {
         closeRegisterModal();
-        openLoginModal();
-      }
-
-      function handleRegister() {
-        const username = $('#registerForm input[type="text"]').val();
-        const email = $('#registerForm input[type="email"]').val();
-        const password = $('#registerForm input[type="password"]').eq(0).val();
-        const confirmPassword = $('#registerForm input[type="password"]').eq(1).val();
-        const agreement = $('#registerForm input[type="checkbox"]').is(':checked');
-        
-        if (!username || !email || !password || !confirmPassword) {
-          alert('请填写完整的注册信息');
-          return;
-        }
-        
-        if (password !== confirmPassword) {
-          alert('两次输入的密码不一致');
-          return;
-        }
-        
-        if (!agreement) {
-          alert('请阅读并同意服务条款和隐私政策');
-          return;
-        }
-        
-        // 这里添加注册的后端交互逻辑
-        console.log('注册信息：', { username, email, password });
-        
-        closeRegisterModal();
-        openLoginModal(); // 注册成功后跳转到登录
       }
     });
 
+
+    //页面初次加载操作
+    function isLogin(){
+      let result=false;
+      $.ajax({
+        url:"http://localhost:8085/api/user/isLogin",
+        method:"get",
+        dataType:"json",
+        async: false,
+        success:function(res){
+          if(res.code==0){
+            result= res.data;
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+      return result;
+    }
+
+    initOp()
+    //页面加载初始化操作
+    function initOp(){
+      let userId=localStorage.getItem("userId")
+      if(""!=userId&&undefined!=userId){
+        if(isLogin()){
+          // 登录成功后隐藏登录按钮，显示用户名
+          $('#loginBtn').hide();
+          $('#userInfo').removeClass('hidden').show();
+          $('#usernameDisplay').text(localStorage.getItem("username"));
+          //显示悬浮菜单
+          $('#floatBtn').removeClass('hidden').show()
+        }
+      }
+
+    }
+
+
+    // 登录/注册相关函数
+    function openLoginModal() {
+      closeRegisterModal();
+      $('#loginModal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeLoginModal() {
+      $('#loginModal').removeClass('flex').addClass('hidden');
+      $('#loginForm')[0].reset();
+    }
+
+    function togglePassword(button) {
+      const input = $(button).siblings('input');
+      const icon = $(button).find('i');
+
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+      } else {
+        input.attr('type', 'password');
+        icon.removeClass('fa-eye-slash').addClass('fa-eye');
+      }
+    }
+
+    function handleLogin() {
+      const tel = $('#loginForm input[type="tel"]').val();
+      const password = $('#loginForm input[type="password"]').val();
+      const remember = $('#loginForm input[type="checkbox"]').is(':checked');
+
+      if (!tel || !password) {
+        alert('请填写完整的登录信息');
+        return;
+      }
+
+
+      // 这里添加登录的后端交互逻辑
+      // console.log('登录信息：', { tel, password, remember });
+      $.ajax({
+        url:"http://localhost:8085/api/user/login",
+        method:"post",
+        dataType:"json",
+        data:{tel:tel,password:password},
+        success:function(res){
+          if(res.code==0){
+            //登录成功
+            toastr.success('登录成功')
+
+            //用户名 和租户存在本地存储
+            localStorage.setItem("userId",res.data.userId)
+            localStorage.setItem("username",res.data.username)
+            localStorage.setItem("tel",res.data.tel)
+            localStorage.setItem("tenantId",res.data.tenantId)
+            localStorage.setItem("token",res.data.token)
+
+            // 登录成功后隐藏登录按钮，显示用户名
+            $('#loginBtn').hide();
+            $('#userInfo').removeClass('hidden').show();
+            $('#usernameDisplay').text(localStorage.getItem("username"));
+            //显示悬浮菜单
+            $('#floatBtn').removeClass('hidden').show()
+
+            //加载目录和书签
+            loadCategories()
+
+            closeLoginModal();
+          }else{
+            alert(res.msg)
+          }
+        }
+
+      })
+    }
+
+    function handleLogout(){
+      $.ajax({
+        url:"http://localhost:8085/api/user/logout",
+        method:"post",
+        dataType:"json",
+        data:{userId:localStorage.getItem("userId")},
+        success:function(res){
+          if(res.code==0){
+            toastr.success('退出成功')
+            //清空本地存储
+            localStorage.removeItem("userId")
+            localStorage.removeItem("username")
+            localStorage.removeItem("tel")
+            localStorage.removeItem("tenantId")
+            localStorage.removeItem("token")
+
+            // 退出登录逻辑
+            $('#userInfo').hide();
+            $('#loginBtn').show();
+            $('#usernameDisplay').text('');
+
+
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+    }
+
+    function openRegisterModal() {
+      closeLoginModal();
+      $('#registerModal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeRegisterModal() {
+      $('#registerModal').removeClass('flex').addClass('hidden');
+      $('#registerForm')[0].reset();
+    }
+
+    function handleRegister() {
+      const tel = $('#registerForm input[type="tel"]').val();
+      const password = $('#registerForm input[type="password"]').eq(0).val();
+      const confirmPassword = $('#registerForm input[type="password"]').eq(1).val();
+      const agreement = $('#registerForm input[type="checkbox"]').is(':checked');
+
+      if (!tel || !password || !confirmPassword) {
+        alert('请填写完整的注册信息');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('两次输入的密码不一致');
+        return;
+      }
+
+      if (!agreement) {
+        alert('请阅读并同意服务条款和隐私政策');
+        return;
+      }
+
+      // 这里添加注册的后端交互逻辑
+      // console.log('注册信息：', { tel, password });
+      $.ajax({
+        url:"http://localhost:8085/api/user/register",
+        method:"post",
+        dataType:"json",//服务器返回结果
+        data:{tel:tel,password:password},
+        success:function (res) {
+          if(res.code==0){
+            //注册成功
+            alert("注册成功")
+            closeRegisterModal();
+            openLoginModal(); // 注册成功后跳转到登录
+          }else{
+            //注册失败
+            alert(res.msg)
+          }
+        }
+      })
+    }
+
+    function switchToLogin() {
+      closeRegisterModal();
+      openLoginModal();
+    }
+
+    function openForgotPasswordModal() {
+      closeLoginModal();
+      $('#forgotPasswordModal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeForgotPasswordModal() {
+      $('#forgotPasswordModal').removeClass('flex').addClass('hidden');
+      $('#forgotPasswordForm')[0].reset();
+    }
+
+    function sendForgotCode() {
+      const phone = $('#forgotPhone').val().trim();
+      if (!phone) {
+        alert('请输入手机号');
+        return;
+      }
+      // 这里添加发送验证码的后端交互逻辑
+      alert('验证码已发送到 ' + phone);
+    }
+
+    function handleForgotPassword() {
+      const phone = $('#forgotPhone').val().trim();
+      const code = $('#forgotCode').val().trim();
+      const newPassword = $('#forgotNewPassword').val().trim();
+      if (!phone || !code || !newPassword) {
+        alert('请填写完整信息');
+        return;
+      }
+      // 这里添加重置密码的后端交互逻辑
+      alert('密码已重置，请使用新密码登录');
+      closeForgotPasswordModal();
+      openLoginModal();
+    }
+
+    //新增书签相关
     // 当前编辑的卡片元素
     let currentCard = null;
 
+    function getLinkById(linkId){
+
+    }
+
+
     // 打开编辑弹框
-    function openEditModal(button) {
-      currentCard = button ? $(button).closest('.bg-card-theme') : null;
-      
+    function openEditModal(linkId) {
+
       // 重置表单
+      $('#editLinkId').val('');
       $('#editTitle').val('');
       $('#editDescription').val('');
       $('#editIcon').val('');
@@ -674,24 +803,31 @@
       $('#editCategory').val('');
       $('#previewIcon').hide();
       
-      if (currentCard) {
-        const title = currentCard.find('h3').text();
-        const description = currentCard.find('p').text();
-        const icon = currentCard.find('img').attr('src') || '';
-        const url = currentCard.data('url') || '';
-        const category = currentCard.data('category') || '';
-        
-        $('#editTitle').val(title);
-        $('#editDescription').val(description);
-        $('#editIcon').val(icon);
-        $('#editUrl').val(url);
-        $('#editCategory').val(category);
-        
-        if (icon) {
-          $('#previewIcon').attr('src', icon).show();
-        }
+      if (linkId) {
+        //编辑
+        $.ajax({
+          url:"http://localhost:8085/api/link/getById",
+          method:"get",
+          dataType:"json",
+          data:{linkId:linkId},
+          success:function(res){
+            if(res.code==0){
+              $('#editLinkId').val(res.data.linkId);
+              $('#editTitle').val(res.data.title);
+              $('#editUrl').val(res.data.url);
+              $('#editDescription').val(res.data.description);
+              $('#editCategory').val(res.data.categoryId);
+              $('#editIcon').val(res.data.icon);
+              if (res.data.icon) {
+                $('#previewIcon').attr('src', res.data.icon).show();
+              }
+            }else{
+              toastr.error(res.msg)
+            }
+          }
+        })
       }
-      
+      //新增
       $('#editModal').removeClass('hidden').addClass('flex');
     }
 
@@ -701,25 +837,54 @@
       currentCard = null;
     }
 
+    //监听url变化
+    $('#editUrl').on('blur', function() {
+      const editUrl = $(this).val();
+      if (editUrl) {
+        const iconUrl=getFaviconWithSize(editUrl)
+        $('#editIcon').val(iconUrl);
+
+        //预览图标
+        previewIcon()
+      }
+    });
     // 监听图标地址变化
-    $('#editIcon').on('input', function() {
-      const iconUrl = $(this).val();
+    // $('#editIcon').on('input', function() {
+    //   console.log("icon change...")
+    //   const iconUrl = $(this).val();
+    //   if (iconUrl) {
+    //     $('#previewIcon').attr('src', iconUrl).show();
+    //   } else {
+    //     $('#previewIcon').hide();
+    //   }
+    // });
+    function previewIcon(){
+      const iconUrl = $('#editIcon').val();
       if (iconUrl) {
         $('#previewIcon').attr('src', iconUrl).show();
       } else {
         $('#previewIcon').hide();
       }
-    });
+    }
+    //根据域名获取icon图标地址
+    function getFaviconWithSize(url) {
+      let domain=url;
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        domain = new URL(url).hostname;
+      }
+      return `https://ico.ihuan.me/${r'${domain}'}`;
+    }
+
+
 
     // 保存编辑
     function saveEdit() {
-      if (!currentCard) return;
-
+      const linkId = $('#editLinkId').val().trim();
       const title = $('#editTitle').val().trim();
-      const description = $('#editDescription').val().trim();
-      const icon = $('#editIcon').val().trim();
       const url = $('#editUrl').val().trim();
-      const category = $('#editCategory').val();
+      const description = $('#editDescription').val().trim();
+      const categoryId = $('#editCategory').val();
+      const icon = $('#editIcon').val().trim();
 
       if (!title) {
         alert('请输入书签名称');
@@ -730,15 +895,24 @@
         alert('请输入链接地址');
         return;
       }
-
-      // 更新卡片内容
-      currentCard.find('h3').text(title);
-      currentCard.find('p').text(description);
-      if (icon) {
-        currentCard.find('.w-8.h-8').html(`<img src="{{= icon}}" alt="" class="w-4 h-4">`);
+      if (!categoryId) {
+        alert('请选择所属分类');
+        return;
       }
-      currentCard.data('url', url);
-      currentCard.data('category', category);
+      $.ajax({
+        url:"http://localhost:8085/api/link",
+        method:"post",
+        dataType:"json",
+        data:{linkId:linkId,title:title,url:url,description:description,icon:icon,categoryId:categoryId},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("保存成功")
+            loadCategories()
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
 
       closeEditModal();
     }
@@ -766,101 +940,40 @@
       closeDeleteModal();
     }
 
+
+
+
+
+
+
+
+
     // 分类管理相关函数
-    let currentCategory = null;
-
-    function editCategory(category) {
-      currentCategory = category;
-      $('#oldCategoryName').val(category);
-      $('#editCategoryName').val(category);
-      $('#editCategoryModal').removeClass('hidden').addClass('flex');
-    }
-
-    function closeEditCategoryModal() {
-      $('#editCategoryModal').removeClass('flex').addClass('hidden');
-      currentCategory = null;
-    }
-
-    function updateCategory() {
-      const newName = $('#editCategoryName').val().trim();
-      const oldName = $('#oldCategoryName').val();
-      
-      if (!newName) {
-        alert('请输入分类名称');
-        return;
-      }
-
-      if (newName === oldName) {
-        closeEditCategoryModal();
-        return;
-      }
-
-      // 这里应该添加与后端的交互逻辑
-      alert('修改分类：' + oldName + ' -> ' + newName);
-      
-      closeEditCategoryModal();
-      loadCategories(); // 重新加载分类列表
-    }
-
-    function deleteCategory(category) {
-      currentCategory = category;
-      $('#deleteCategoryName').text(category);
-      $('#deleteCategoryModal').removeClass('hidden').addClass('flex');
-    }
-
-    function closeDeleteCategoryModal() {
-      $('#deleteCategoryModal').removeClass('flex').addClass('hidden');
-      currentCategory = null;
-    }
-
-    function confirmDeleteCategory() {
-      if (!currentCategory) return;
-
-      // 这里应该添加与后端的交互逻辑
-      alert('删除分类：' + currentCategory);
-      
-      closeDeleteCategoryModal();
-      loadCategories(); // 重新加载分类列表
-    }
-
-    // 修改 loadCategories 函数中的分类项模板
-    function loadCategories() {
-      const categories = [
-        '常用工具', 'JSON工具', '编码加密', '网络工具', 
-        '时间日期', '代码工具', '文本处理', '图像工具'
-      ];
-      
-      const categoryList = $('#categoryList');
-      categoryList.empty();
-      
-      categories.forEach(category => {
-        categoryList.append(`
-          <div class="flex items-center justify-between p-3 bg-theme rounded group">
-            <span class="text-sm text-theme">{{= category}}</span>
-            <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button class="text-theme-secondary hover:text-blue-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="editCategory('{{= category}}')" title="编辑分类">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="deleteCategory('{{= category}}')" title="删除分类">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </div>
-        `);
-      });
-    }
-
     function addCategory() {
       const newCategory = $('#newCategory').val().trim();
       if (!newCategory) {
         alert('请输入分类名称');
         return;
       }
-      
-      // 这里应该添加与后端的交互逻辑
-      alert('添加分类：' + newCategory);
-      $('#newCategory').val('');
-      loadCategories();
+
+      // 这里后端的交互逻辑
+      $.ajax({
+        url:"http://localhost:8085/api/category",
+        method:"post",
+        dataType:"json",
+        data:{name:newCategory},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("添加成功")
+
+            $('#newCategory').val('');
+            loadCategories();
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+
     }
 
     function openCategoryModal() {
@@ -871,6 +984,209 @@
     function closeCategoryModal() {
       $('#categoryModal').removeClass('flex').addClass('hidden');
     }
+
+    let currentCategory = null;
+
+    function editCategory(categoryId,categoryName) {
+      currentCategory = categoryId;
+      $('#categoryId').val(categoryId);
+      $('#editCategoryName').val(categoryName);
+      $('#editCategoryModal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeEditCategoryModal() {
+      $('#editCategoryModal').removeClass('flex').addClass('hidden');
+      currentCategory = null;
+    }
+
+    function updateCategory() {
+      const newName = $('#editCategoryName').val().trim();
+      const categoryId = $('#categoryId').val();
+      
+      if (!newName) {
+        alert('请输入分类名称');
+        return;
+      }
+
+      // 这里应该添加与后端的交互逻辑
+      $.ajax({
+        url:"http://localhost:8085/api/category",
+        method:"put",
+        dataType:'json',
+        data:{categoryId:categoryId,name:newName},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("修改成功")
+
+            closeEditCategoryModal();
+            loadCategories(); // 重新加载分类列表
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+      
+
+    }
+
+    function deleteCategory(categoryId,categoryName) {
+      currentCategory = categoryId;
+      $('#deleteCategoryId').text(categoryId);
+      $('#deleteCategoryName').text(categoryName);
+      $('#deleteCategoryModal').removeClass('hidden').addClass('flex');
+    }
+
+    function closeDeleteCategoryModal() {
+      $('#deleteCategoryModal').removeClass('flex').addClass('hidden');
+      currentCategory = null;
+    }
+
+    function confirmDeleteCategory() {
+      if (!currentCategory) return;
+      const categoryId=$("#deleteCategoryId").text()
+
+      // 这里应该添加与后端的交互逻辑
+      // alert('删除分类：' + currentCategory);
+      $.ajax({
+        url:"http://localhost:8085/api/category",
+        method:"delete",
+        dataType:"json",
+        data:{categoryId:categoryId},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("删除成功")
+
+            closeDeleteCategoryModal();
+            loadCategories(); // 重新加载分类列表
+          }else{
+            toastr.error("删除失败")
+          }
+        }
+      })
+
+
+    }
+
+    loadCategories()
+    // 修改 loadCategories 函数中的分类项模板
+    function loadCategories() {
+      // const categories = [
+      //   '常用工具', 'JSON工具', '编码加密', '网络工具',
+      //   '时间日期', '代码工具', '文本处理', '图像工具'
+      // ];
+      let categories=[]
+
+      //加载远程
+       $.ajax({
+        url:"http://localhost:8085/api/category/list",
+        method:"get",
+        dataType:"json",
+        data:"json",
+        async: false, // 设置为同步请求
+        success:function (res){
+          if(res.code==0){
+            res.data.forEach(u=> categories.push(u))
+
+            //加载书签数据
+            loadLinks(categories[0].categoryId)
+          }else{
+            toastr.error("加载失败")
+          }
+        }
+      })
+
+      //生成横向导航
+      const navList=$('#navList')
+      navList.empty()
+      categories.forEach(category=>{
+        navList.append(`
+        <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">${r'${category.name}'}</button>
+        `)
+      })
+
+      //生成书签选择目录列表
+      const selectCategoryList=$("#editCategory")
+      selectCategoryList.empty()
+      categories.forEach(category=>{
+        selectCategoryList.append(`
+        <option value="${r'${category.categoryId}'}">${r'${category.name}'}</option>
+        `)
+      })
+
+
+
+      //生成目录列表
+      const categoryList = $('#categoryList');
+      categoryList.empty();
+      
+      categories.forEach(category => {
+        categoryList.append(`
+          <div class="flex items-center justify-between p-3 bg-theme rounded group">
+            <span class="text-sm text-theme">${r'${category.name}'}</span>
+            <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button class="text-theme-secondary hover:text-blue-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="editCategory('${r'${category.categoryId}'}','${r'${category.name}'}')" title="编辑分类">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="deleteCategory('${r'${category.categoryId}'}','${r'${category.name}'}')" title="删除分类">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        `);
+      });
+    }
+
+
+    //加载书签数据
+    function loadLinks(categoryId,linkTitle=''){
+      $.ajax({
+        url:"http://localhost:8085/api/link/list",
+        method:"get",
+        dataType:"json",
+        data:{categoryId:categoryId,linkTitle:linkTitle},
+        success:function(res){
+          const linkList=$("#linkList")
+          linkList.empty()
+
+          if(res.code==0){
+            res.data.forEach(link=>{
+              linkList.append(`
+                  <div   class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
+                   <div class="flex items-start justify-between mb-2">
+                       <div class="flex items-center space-x-2">
+                         <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
+                          <i class="fas fa-code text-base text-purple-500"></i>
+                         </div>
+                         <a href="javascript:void(0)"  onclick="openLink('${r'${link.url}'}')"><h3  class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3></a>
+                       </div>
+                       <div class="flex items-center space-x-1">
+                        <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openEditModal('${r'${link.linkId}'}')" title="编辑">
+                          <i class="fas fa-edit text-sm"></i>
+                        </button>
+                        <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteModal('${r'${link.linkId}'}')" title="删除">
+                          <i class="fas fa-trash-alt text-sm"></i>
+                        </button>
+                       </div>
+                   </div>
+                   <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
+                 </div>
+
+              `)
+            })
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+    }
+
+  //书签点击打开链接
+  function openLink(linkUrl){
+      if(!linkUrl.startsWith("http")||linkUrl.startsWith("https")){
+        linkUrl="http://"+linkUrl;
+      }
+      window.open(linkUrl,"_blank")
+  }
   </script>
 </body>
 </html> 

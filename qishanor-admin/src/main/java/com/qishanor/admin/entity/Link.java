@@ -1,25 +1,24 @@
 package com.qishanor.admin.entity;
 
-
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 
 import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class Category extends Model<Category> {
+public class Link extends Model<Link> {
 
-    @JsonSerialize(using=ToStringSerializer.class)
-    @TableId(type =IdType.ASSIGN_ID)
-    private Long categoryId;
-    private String name;
+    @JsonSerialize(using = ToStringSerializer.class)
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long linkId;
+    private String title;
+    private String url;
+    private String description;
+    private String icon;
+    private String categoryId;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

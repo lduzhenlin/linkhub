@@ -1,7 +1,8 @@
 
-package com.qishanor.admin.entity;
+package com.qishanor.common.core.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.qishanor.common.core.constant.CommonConstant;
 import lombok.*;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
@@ -34,31 +35,31 @@ public class R<T> implements Serializable {
     private T data;
 
     public static <T> R<T> ok() {
-        return restResult(null, CommonConstants.SUCCESS, null);
+        return restResult(null, CommonConstant.SUCCESS, null);
     }
 
     public static <T> R<T> ok(T data) {
-        return restResult(data, CommonConstants.SUCCESS, null);
+        return restResult(data, CommonConstant.SUCCESS, null);
     }
 
     public static <T> R<T> ok(T data, String msg) {
-        return restResult(data, CommonConstants.SUCCESS, msg);
+        return restResult(data, CommonConstant.SUCCESS, msg);
     }
 
     public static <T> R<T> failed() {
-        return restResult(null, CommonConstants.FAIL, null);
+        return restResult(null, CommonConstant.FAIL, null);
     }
 
     public static <T> R<T> failed(String msg) {
-        return restResult(null, CommonConstants.FAIL, msg);
+        return restResult(null, CommonConstant.FAIL, msg);
     }
 
     public static <T> R<T> failed(T data) {
-        return restResult(data, CommonConstants.FAIL, null);
+        return restResult(data, CommonConstant.FAIL, null);
     }
 
     public static <T> R<T> failed(T data, String msg) {
-        return restResult(data, CommonConstants.FAIL, msg);
+        return restResult(data, CommonConstant.FAIL, msg);
     }
 
     static <T> R<T> restResult(T data, int code, String msg) {
@@ -71,7 +72,7 @@ public class R<T> implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public boolean isOk() {
-        return this.code == CommonConstants.SUCCESS;
+        return this.code == CommonConstant.SUCCESS;
     }
 
 }
