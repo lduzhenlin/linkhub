@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <groupId>com.qishanor</groupId>
+    <artifactId>zeus-common-bom</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+
+    <description>zeus 公共版本控制，在此pom定义的依赖，全局业务微服务不需要指定版本。</description>
+
+    <properties>
+        <zeus.version>1.0.0</zeus.version>
+        <hutool.version>5.8.37</hutool.version>
+        <mybatis-plus.version>3.5.12</mybatis-plus.version>
+        <sa-token.version>1.42.0</sa-token.version>
+        <ttl.version>2.14.5</ttl.version>
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.qishanor</groupId>
+                <artifactId>zeus-common-core</artifactId>
+                <version>${zeus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.qishanor</groupId>
+                <artifactId>zeus-common-data</artifactId>
+                <version>${zeus.version}</version>
+            </dependency>
+
+
+            <!--hutool-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-bom</artifactId>
+                <version>${mybatis-plus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
+            <!--解决了在异步编程环境中线程本地变量传递的问题。-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${ttl.version}</version>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

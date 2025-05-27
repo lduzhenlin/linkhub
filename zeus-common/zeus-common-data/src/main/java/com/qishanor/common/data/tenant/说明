@@ -1,0 +1,37 @@
+
+TenantContextHolder  租户工具类
+
+TenantContextHolderFilter 前端请求租户过滤器
+
+TenantTable 注解方式 需要进行租户过滤的表
+
+ZeusTenantConfigProperties  配置文件方式 需要进行租户过滤的表集合
+
+ZeusTenantLineHandler  租户处理类
+
+
+ZeusTenantConfiguration  租户配置类 主要配置TenantRequestInterceptor
+
+TenantRequestInterceptor  使用RestTemplate请求时，传递 RestTemplate 请求的租户ID
+
+
+
+思路：
+
+前端发送http请求，携带tenantId字段，
+
+---->通过TenantContextHolderFilter 请求租户过滤器拦截之后，获取前端传递的过滤器
+
+---->将tenantId通过阿里云的transmittable-thread-local的包保存在当前请求线程中，
+
+---->ZeusTenantLineHandler 获取tenantId并根据配置进行选择性的过滤，如果表是需要进行租户过滤，则添加租户条件，不需要租户过滤，则不添加租户过滤条件，
+通过添加@TenantTable 或者在yml文件中配置zeus.tenant.tables进行配置需要租户过滤的表
+
+----> 这样的话 就根据条件需要添加租户的表，就进行添加，不需要的就不添加
+
+
+TenantRequestInterceptor  使用RestTemplate请求时，传递 RestTemplate 请求的租户ID
+
+
+
+

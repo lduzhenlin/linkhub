@@ -1,0 +1,61 @@
+package com.qishanor.admin.controller;
+
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpLogic;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ObjUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.qishanor.admin.Service.CategoryService;
+import com.qishanor.admin.entity.Category;
+import com.qishanor.common.data.constant.CacheConstant;
+import com.qishanor.common.data.util.R;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Data
+@SaCheckLogin
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/category")
+public class CategoryController {
+
+    private final CategoryService categoryService;
+
+    @GetMapping("/list")
+    public Object list(){
+        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
+
+       List<Category> categoryList=categoryService.list(Wrappers.<Category>lambdaQuery().eq(Category::getTenantId,tenantId));
+       return R.ok(categoryList);
+    }
+    @PostMapping()
+    public Object save(Category category){
+        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
+        category.setTenantId(tenantId);
+
+        categoryService.save(category);
+        return R.ok();
+    }
+
+    @PutMapping()
+    public Object edit(Category category){
+        Category dbCategory=categoryService.getById(category.getCategoryId());
+        if(ObjUtil.isEmpty(dbCategory)){
+            return R.failed("数据不存在");
+        }
+
+        dbCategory.setName(category.getName());
+        categoryService.updateById(dbCategory);
+        return R.ok();
+    }
+
+    @DeleteMapping
+    public Object remove(Long categoryId){
+        categoryService.removeById(categoryId);
+
+        return R.ok();
+    }
+}
