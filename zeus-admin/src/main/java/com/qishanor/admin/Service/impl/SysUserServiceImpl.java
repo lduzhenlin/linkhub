@@ -3,6 +3,7 @@ package com.qishanor.admin.Service.impl;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qishanor.admin.Service.SysUserService;
@@ -31,8 +32,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //密码加密存储
         sysUser.setUsername(sysUser.getTel());
-        //连续两次md5加密
-        sysUser.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(sysUser.getPassword())));
+        //使用 Spring Security 的 BCryptPasswordEncoder
+        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword()));
+
 
         sysUser.setTenantId(getNextTenantId());
 

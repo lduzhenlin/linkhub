@@ -1,11 +1,11 @@
 server:
-  port: 8085
+  port: 8008
   servlet:
     context-path: ''
 
 spring:
   profiles:
-    active: dev
+    active: prod
   freemarker:
     charset: utf-8
     suffix: .ftl

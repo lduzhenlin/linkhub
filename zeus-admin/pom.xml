@@ -8,6 +8,7 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>zeus-admin</artifactId>
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>17</java.version>
@@ -17,9 +18,15 @@
 
 		<dependency>
 			<groupId>com.qishanor</groupId>
-			<artifactId>zeus-common-data</artifactId>
-			<version>${parent.version}</version>
+			<artifactId>zeus-common-core</artifactId>
+			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qishanor</groupId>
+			<artifactId>zeus-common-data</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
@@ -52,11 +59,24 @@
 
 	<build>
 		<plugins>
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--			</plugin>-->
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
+
 	</build>
 
 </project>

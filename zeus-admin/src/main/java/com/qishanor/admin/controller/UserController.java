@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qishanor.admin.Service.SysUserService;
 import com.qishanor.admin.entity.SysUser;
@@ -30,9 +31,8 @@ public class UserController {
     @PostMapping("/login")
     public Object login(String tel, String password) {
 
-        String encodePassword= SecureUtil.md5(SecureUtil.md5(password));
         SysUser dbUser=sysUserService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername,tel).or().eq(SysUser::getTel,tel));
-        if(ObjUtil.isEmpty(dbUser)||!encodePassword.equals(dbUser.getPassword())){
+        if(ObjUtil.isEmpty(dbUser)||!BCrypt.checkpw(password,dbUser.getPassword())){
             return R.failed("用户名或密码错误");
         }
 

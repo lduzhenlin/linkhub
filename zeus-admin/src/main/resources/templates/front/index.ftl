@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LinkHub导航系统</title>
+  <title>LinkHub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -464,7 +464,7 @@
   </div>
 
   <script>
-    let BASE_API="http://localhost:8085/api"
+    let BASE_API="${baseUrl}"
     function toggleThemeIcon(theme){
       if (theme === 'dark') {
         $(themeToggle).find('.fa-moon').removeClass('hidden');
@@ -604,7 +604,6 @@
     }
     //页面初次加载操作
     function isLogin(){
-      console.log(localStorage.getItem("tenantId"))
       let result=false;
       $.ajax({
         url:BASE_API+"/user/isLogin",
@@ -1183,7 +1182,10 @@
           if (res.code == 0) {
             res.data.forEach(u => categories.push(u));
             //加载书签数据
-            loadLinks(categories[0].categoryId);
+            if(categories.length>0){
+              loadLinks(categories[0].categoryId);
+            }
+
           } else {
             toastr.error("加载失败");
           }

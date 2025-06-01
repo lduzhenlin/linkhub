@@ -15,9 +15,11 @@
 	<description>zeus 公共聚合模块</description>
 
 	<modules>
-		<module>zeus-common-data</module>
-		<module>zeus-common-core</module>
 		<module>zeus-common-bom</module>
+		<module>zeus-common-core</module>
+		<module>zeus-common-data</module>
+
+
 	</modules>
 
 </project>
