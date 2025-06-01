@@ -192,7 +192,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-user text-theme-secondary"></i>
               </div>
-              <input type="tel" value="13345092258" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
+              <input type="tel"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
             </div>
           </div>
           <div>
@@ -201,7 +201,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" value="1" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
+              <input type="password"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
               <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                 <i class="fas fa-eye"></i>
               </button>
@@ -532,7 +532,6 @@
       $('#loginBtn').on('click', function(e) {
         e.preventDefault();
         openLoginModal();
-        console.log("进来了。。。")
       });
 
       // 确保所有关闭按钮都能正常工作
