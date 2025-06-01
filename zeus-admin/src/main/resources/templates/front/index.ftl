@@ -910,6 +910,9 @@
       if (url.startsWith('http://') || url.startsWith('https://')) {
         domain = new URL(url).hostname;
       }
+      //待确定
+      //ttps://xxapi.cn/doc/ico
+      //https://www.favicon.vip/
       return `https://icon.bqb.cool/?url=${r'${domain}'}`;
     }
 
