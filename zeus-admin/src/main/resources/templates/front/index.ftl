@@ -874,15 +874,20 @@
     $('#editLinkUrl').on('blur', function() {
       const editLinkUrl = $(this).val();
       if (editLinkUrl) {
-        const iconUrl=getFaviconWithSize(editUrl)
-        $('#editIcon').val(iconUrl);
+        const iconUrl=getFavicon(editLinkUrl)
+        $('#editLinkIcon').val(iconUrl);
 
         //预览图标
-        previewIcon()
+        // previewIcon()
+        if (iconUrl) {
+          $('#previewIcon').attr('src', iconUrl).show();
+        } else {
+          $('#previewIcon').hide();
+        }
       }
     });
     // 监听图标地址变化
-    // $('#editIcon').on('input', function() {
+    // $('#editLinkUrl').on('input', function() {
     //   console.log("icon change...")
     //   const iconUrl = $(this).val();
     //   if (iconUrl) {
@@ -900,12 +905,12 @@
       }
     }
     //根据域名获取icon图标地址
-    function getFaviconWithSize(url) {
-      let domain=url;
+    function getFavicon(url) {
+      let domain = url;
       if (url.startsWith('http://') || url.startsWith('https://')) {
         domain = new URL(url).hostname;
       }
-      return `https://ico.ihuan.me/${r'${domain}'}`;
+      return `https://icon.bqb.cool/?url=${r'${domain}'}`;
     }
 
 
@@ -1020,7 +1025,6 @@
                    </div>
                    <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
                  </div>
-
               `)
             })
           }else{
