@@ -26,15 +26,13 @@ public class CategoryController {
 
     @GetMapping("/list")
     public Object list(){
-        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
-
-       List<Category> categoryList=categoryService.list(Wrappers.<Category>lambdaQuery().eq(Category::getTenantId,tenantId));
+       List<Category> categoryList=categoryService.list();
        return R.ok(categoryList);
     }
     @PostMapping()
     public Object save(Category category){
-        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
-        category.setTenantId(tenantId);
+//        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
+//        category.setTenantId(tenantId);
 
         categoryService.save(category);
         return R.ok();

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkHub导航系统</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <!-- jQuery -->
@@ -62,33 +62,51 @@
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
 
-
     .hidden { display: none !important; }
+
+    /* 移动端导航菜单 */
+    @media (max-width: 768px) {
+      .mobile-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      .mobile-menu.active {
+        transform: translateX(0);
+      }
+    }
   </style>
 </head>
 <body class="bg-theme text-theme min-h-screen transition-colors duration-200">
   <div class="min-h-screen flex flex-col">
     <!-- 顶部导航栏 -->
     <header class="bg-theme border-b border-theme">
-      <div class="container mx-auto px-6 py-3">
+      <div class="container mx-auto px-4 sm:px-6 py-3">
         <div class="flex items-center justify-between">
+          <!-- 移动端菜单按钮 -->
+          <button id="mobileMenuBtn" class="lg:hidden text-theme-secondary hover:text-purple-500 transition-colors">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          
           <div class="flex items-center space-x-3">
             <h1 class="text-xl font-bold text-purple-500">LinkHub</h1>
-            <span class="text-theme-secondary">|</span>
-            <span class="text-theme-secondary text-sm">高效导航集成平台</span>
+            <span class="text-theme-secondary hidden sm:inline">|</span>
+            <span class="text-theme-secondary text-sm hidden sm:inline">高效导航集成平台</span>
           </div>
-          <div class="flex items-center space-x-6">
-            <div class="relative">
+          
+          <div class="flex items-center space-x-4">
+            <!-- 搜索框 - 在移动端隐藏 -->
+            <div class="relative hidden md:block">
               <input type="text" id="searchInput" placeholder="搜索链接..."
                 class="w-80 px-4 py-1.5 pl-10 bg-card-theme rounded text-theme border border-theme focus:outline-none focus:border-purple-500 transition-colors duration-200">
               <i id="searchbtn" class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
             </div>
+            
             <div class="flex items-center space-x-4">
               <button id="themeToggle" class="text-theme-secondary hover:text-purple-500 transition-colors" title="切换主题">
                 <i class="fas fa-moon"></i>
                 <i class="fas fa-sun"></i>
               </button>
-              <div class="h-4 w-px bg-theme-secondary opacity-20"></div>
+              <div class="h-4 w-px bg-theme-secondary opacity-20 hidden sm:block"></div>
               <button class="px-4 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded text-sm transition-colors" id="loginBtn">
                 登录
               </button>
@@ -99,30 +117,64 @@
             </div>
           </div>
         </div>
+        
+        <!-- 移动端搜索框 -->
+        <div class="mt-3 md:hidden">
+          <div class="relative">
+            <input type="text" id="mobileSearchInput" placeholder="搜索链接..."
+              class="w-full px-4 py-2 pl-10 bg-card-theme rounded text-theme border border-theme focus:outline-none focus:border-purple-500 transition-colors duration-200">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
+          </div>
+        </div>
       </div>
     </header>
 
-    <!-- 分类导航 -->
-    <nav class="bg-theme sticky top-0 z-10 border-b border-theme">
+    <!-- 移动端导航菜单 -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-y-0 left-0 w-64 bg-card-theme z-50 md:hidden">
+      <div class="p-4 border-b border-theme">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-medium text-theme">导航菜单</h2>
+          <button id="closeMobileMenu" class="text-theme-secondary hover:text-theme transition-colors">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div id="mobileNavList" class="p-4 space-y-2">
+        <!-- 移动端分类列表将通过 JavaScript 动态生成 -->
+      </div>
+    </div>
+
+    <!-- 分类导航 - 在移动端隐藏 -->
+    <nav class="bg-theme sticky top-0 z-10 border-b border-theme block">
       <div class="container mx-auto px-6 py-2">
-        <div id="navList" class="flex items-center space-x-2">
+        <div id="navList" class="flex items-center space-x-2 overflow-x-auto">
           <!-- 分类列表将通过 JavaScript 动态生成 -->
         </div>
       </div>
     </nav>
 
     <!-- 主要内容区 -->
-    <main class="flex-1 container mx-auto px-6 py-6">
-      <div id="linkList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <main class="flex-1 container mx-auto px-4 sm:px-6 py-6">
+      <div id="linkList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <!-- 工具卡片  有js动态生成-->
 
       </div>
     </main>
   </div>
 
+  <!-- 悬浮按钮 - 在移动端调整位置 -->
+  <div id="floatBtn" class="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 flex flex-col space-y-3 hidden">
+    <button onclick="openLinkEditModal(null)" class="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="添加书签">
+      <i class="fas fa-plus"></i>
+    </button>
+    <button onclick="openSaveCategoryModal()" class="w-12 h-12 bg-purple-500 hover:bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="分类管理">
+      <i class="fas fa-tags"></i>
+    </button>
+  </div>
+
   <!-- 登录弹框 -->
   <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-card-theme rounded-lg w-[480px] relative">
+    <div class="bg-card-theme rounded-lg w-[480px] max-w-[95%] relative">
       <div class="p-8">
         <!-- 标题和关闭按钮 -->
         <div class="flex justify-between items-center mb-8">
@@ -411,16 +463,6 @@
     </div>
   </div>
 
-  <!-- 悬浮按钮 -->
-  <div id="floatBtn" class="fixed right-6 bottom-6 flex flex-col space-y-3 hidden">
-    <button onclick="openLinkEditModal(null)" class="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="添加书签">
-      <i class="fas fa-plus"></i>
-    </button>
-    <button onclick="openSaveCategoryModal()" class="w-12 h-12 bg-purple-500 hover:bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="分类管理">
-      <i class="fas fa-tags"></i>
-    </button>
-  </div>
-
   <script>
     let BASE_API="http://localhost:8085/api"
     function toggleThemeIcon(theme){
@@ -487,9 +529,10 @@
       });
 
       // 修改登录按钮点击事件绑定
-      $('button:contains("登录")').on('click', function(e) {
+      $('#loginBtn').on('click', function(e) {
         e.preventDefault();
         openLoginModal();
+        console.log("进来了。。。")
       });
 
       // 确保所有关闭按钮都能正常工作
@@ -499,10 +542,38 @@
       });
 
       // 点击模态框背景关闭
-      $('#loginModal, #registerModal').on('click', function(e) {
+      $('#loginModal').on('click', function(e) {
         if (e.target === this) {
           closeLoginModal();
-          closeRegisterModal();
+        }
+      });
+
+      // 添加移动端菜单控制
+      $('#mobileMenuBtn').on('click', function() {
+        $('#mobileMenu').addClass('active');
+      });
+
+      $('#closeMobileMenu').on('click', function() {
+        $('#mobileMenu').removeClass('active');
+      });
+
+      // 移动端搜索
+      $('#mobileSearchInput').on('keydown', function(e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+          const keyword = $(this).val().trim();
+          if (keyword) {
+            loadLinks(null, keyword);
+            $('#mobileMenu').removeClass('active');
+          } else {
+            toastr.warning('请输入搜索内容');
+          }
+        }
+      });
+
+      // 点击移动端菜单外部关闭菜单
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#mobileMenu, #mobileMenuBtn').length) {
+          $('#mobileMenu').removeClass('active');
         }
       });
     });
@@ -528,19 +599,20 @@
           $('#usernameDisplay').text(localStorage.getItem("username"));
           //显示悬浮菜单
           $('#floatBtn').removeClass('hidden').show()
-
           loadCategories()
         }
       }
     }
     //页面初次加载操作
     function isLogin(){
+      console.log(localStorage.getItem("tenantId"))
       let result=false;
       $.ajax({
         url:BASE_API+"/user/isLogin",
         method:"get",
         dataType:"json",
         async: false,
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         success:function(res){
           if(res.code==0){
             result= res.data;
@@ -554,11 +626,15 @@
     function openLoginModal() {
       closeRegisterModal();
       $('#loginModal').removeClass('hidden').addClass('flex');
+      // 防止背景滚动
+      document.body.style.overflow = 'hidden';
     }
 
     function closeLoginModal() {
       $('#loginModal').removeClass('flex').addClass('hidden');
       $('#loginForm')[0].reset();
+      // 恢复背景滚动
+      document.body.style.overflow = '';
     }
 
     function togglePassword(button) {
@@ -590,6 +666,7 @@
         url:BASE_API+"/user/login",
         method:"post",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{tel:tel,password:password},
         success:function(res){
           if(res.code==0){
@@ -627,6 +704,7 @@
         url:BASE_API+"/user/logout",
         method:"post",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{userId:localStorage.getItem("userId")},
         success:function(res){
           if(res.code==0){
@@ -642,6 +720,8 @@
             $('#userInfo').hide();
             $('#loginBtn').show();
             $('#usernameDisplay').text('');
+
+            window.location="/"
 
 
           }else{
@@ -688,6 +768,7 @@
         url:BASE_API+"/user/register",
         method:"post",
         dataType:"json",//服务器返回结果
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{tel:tel,password:password},
         success:function (res) {
           if(res.code==0){
@@ -762,6 +843,7 @@
           url:BASE_API+"/link/getById",
           method:"get",
           dataType:"json",
+          headers:{'TENANT-ID':localStorage.getItem("tenantId")},
           data:{linkId:linkId},
           success:function(res){
             if(res.code==0){
@@ -856,6 +938,7 @@
         url:BASE_API+"/link",
         method:"post",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{linkId:linkId,title:title,url:url,description:description,icon:icon,categoryId:categoryId},
         success:function(res){
           if(res.code==0){
@@ -890,6 +973,7 @@
         url:BASE_API+"/link",
         method:"delete",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{linkId:deleteLinkId},
         success:function(res){
           if(res.code==0){
@@ -909,6 +993,7 @@
         url:BASE_API+"/link/list",
         method:"get",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{categoryId:categoryId,linkTitle:linkTitle},
         success:function(res){
           const linkList=$("#linkList")
@@ -978,6 +1063,7 @@
         url:BASE_API+"/category",
         method:"post",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{name:newCategory},
         success:function(res){
           if(res.code==0){
@@ -1019,6 +1105,7 @@
         url:BASE_API+"/category",
         method:"put",
         dataType:'json',
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{categoryId:categoryId,name:newName},
         success:function(res){
           if(res.code==0){
@@ -1054,6 +1141,7 @@
         url:BASE_API+"/category",
         method:"delete",
         dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
         data:{categoryId:categoryId},
         success:function(res){
           if(res.code==0){
@@ -1071,65 +1159,75 @@
     }
 
 
-    loadCategories()
+
 
     // 修改 loadCategories 函数中的分类项模板
     function loadCategories() {
-
-      let categories=[]
+      let categories = [];
 
       //加载远程
-       $.ajax({
-        url:BASE_API+"/category/list",
-        method:"get",
-        dataType:"json",
-        data:"json",
-        async: false, // 设置为同步请求
-        success:function (res){
-          if(res.code==0){
-            res.data.forEach(u=> categories.push(u))
-
+      $.ajax({
+        url: BASE_API + "/category/list",
+        method: "get",
+        dataType: "json",
+        data: "json",
+        async: false,
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        success: function(res) {
+          if (res.code == 0) {
+            res.data.forEach(u => categories.push(u));
             //加载书签数据
-            loadLinks(categories[0].categoryId)
-          }else{
-            toastr.error("加载失败")
+            loadLinks(categories[0].categoryId);
+          } else {
+            toastr.error("加载失败");
           }
         }
-      })
+      });
 
-      //生成横向导航
-      const navList=$('#navList')
-      navList.empty()
-      categories.forEach(category=>{
+      //生成横向导航（桌面端）
+      const navList = $('#navList');
+      navList.empty();
+      categories.forEach(category => {
         navList.append(`
-        <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors">${r'${category.name}'}</button>
-        `)
-      })
+          <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap">${r'${category.name}'}</button>
+        `);
+      });
+
+      //生成移动端导航菜单
+      const mobileNavList = $('#mobileNavList');
+      mobileNavList.empty();
+      categories.forEach(category => {
+        mobileNavList.append(`
+          <button onclick="loadLinks('${r'${category.categoryId}'}'); $('#mobileMenu').removeClass('active');"
+            class="w-full px-4 py-2 text-sm text-theme-secondary hover:bg-theme rounded transition-colors text-left">
+            ${r'${category.name}'}
+          </button>
+        `);
+      });
 
       //生成书签选择目录列表
-      const selectCategoryList=$("#editLinkCategoryId")
-      selectCategoryList.empty()
-      categories.forEach(category=>{
+      const selectCategoryList = $("#editLinkCategoryId");
+      selectCategoryList.empty();
+      categories.forEach(category => {
         selectCategoryList.append(`
-        <option value="${r'${category.categoryId}'}">${r'${category.name}'}</option>
-        `)
-      })
-
-
+          <option value="${r'${category.categoryId}'}">${r'${category.name}'}</option>
+        `);
+      });
 
       //生成目录列表
       const categoryList = $('#categoryList');
       categoryList.empty();
-      
       categories.forEach(category => {
         categoryList.append(`
           <div class="flex items-center justify-between p-3 bg-theme rounded group">
             <span class="text-sm text-theme">${r'${category.name}'}</span>
             <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button class="text-theme-secondary hover:text-blue-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="openEditCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="编辑分类">
+              <button class="text-theme-secondary hover:text-blue-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" 
+                onclick="openEditCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="编辑分类">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" onclick="openDeleteCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="删除分类">
+              <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" 
+                onclick="openDeleteCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="删除分类">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>

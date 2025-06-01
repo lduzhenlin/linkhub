@@ -17,6 +17,7 @@
 
 package com.qishanor.common.data.tenant;
 
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import com.qishanor.common.data.constant.CacheConstant;
 import com.qishanor.common.data.constant.CommonConstant;
@@ -59,14 +60,16 @@ public class TenantContextHolderFilter extends GenericFilterBean {
         String paramTenantId = request.getParameter(CommonConstant.TENANT_ID);
 
         log.debug("获取header中的租户ID为:{}", headerTenantId);
+        Console.log("获取header中的租户ID为:{}", headerTenantId);
 
-        if (StrUtil.isNotBlank(headerTenantId) && !StrUtil.equals(UNDEFINED_STR, headerTenantId)) {
+        if (StrUtil.isNotBlank(headerTenantId) && !StrUtil.equals(UNDEFINED_STR, headerTenantId)&& !StrUtil.equals("null", headerTenantId)) {
             TenantContextHolder.setTenantId(Long.parseLong(headerTenantId));
-        } else if (StrUtil.isNotBlank(paramTenantId) && !StrUtil.equals(UNDEFINED_STR, paramTenantId)) {
+        } else if (StrUtil.isNotBlank(paramTenantId) && !StrUtil.equals(UNDEFINED_STR, paramTenantId)&& !StrUtil.equals("null", headerTenantId)) {
             TenantContextHolder.setTenantId(Long.parseLong(paramTenantId));
-        } else {
-            TenantContextHolder.setTenantId(CommonConstant.TENANT_ID_1);
         }
+//        else {
+//            TenantContextHolder.setTenantId(CommonConstant.TENANT_ID_1);
+//        }
 
 //        if (!checkTenantStatus(request, response)) {
 //            TenantContextHolder.clear();
@@ -89,7 +92,7 @@ public class TenantContextHolderFilter extends GenericFilterBean {
      */
     private boolean checkTenantStatus(HttpServletRequest request, HttpServletResponse response) {
         // 如果是获取租户列表请求跳过检查
-        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/tenant/list")) {
+        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/user/login")) {
             return true;
         }
 

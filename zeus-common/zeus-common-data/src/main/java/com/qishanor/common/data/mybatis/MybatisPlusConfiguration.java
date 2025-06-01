@@ -17,6 +17,7 @@
 
 package com.qishanor.common.data.mybatis;
 
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.qishanor.common.data.tenant.ZeusTenantConfigProperties;
@@ -42,6 +43,15 @@ import javax.sql.DataSource;
 public class MybatisPlusConfiguration implements WebMvcConfigurer {
 
 
+    /**
+     * 审计字段自动填充
+     *
+     * @return {@link MetaObjectHandler}
+     */
+    @Bean
+    public MybatisPlusMetaObjectHandler mybatisPlusMetaObjectHandler() {
+        return new MybatisPlusMetaObjectHandler();
+    }
 
     /**
      * mybatis plus 拦截器配置
@@ -64,9 +74,9 @@ public class MybatisPlusConfiguration implements WebMvcConfigurer {
      */
     @Bean
     @ConditionalOnMissingBean
-    public TenantLineInnerInterceptor tenantLineInnerInterceptor(ZeusTenantConfigProperties tenantConfigProperties) {
+    public TenantLineInnerInterceptor tenantLineInnerInterceptor(ZeusTenantConfigProperties zeusTenantConfigProperties) {
         TenantLineInnerInterceptor tenantLineInnerInterceptor = new TenantLineInnerInterceptor();
-        tenantLineInnerInterceptor.setTenantLineHandler(new ZeusTenantLineHandler(tenantConfigProperties));
+        tenantLineInnerInterceptor.setTenantLineHandler(new ZeusTenantLineHandler(zeusTenantConfigProperties));
         return tenantLineInnerInterceptor;
     }
 
