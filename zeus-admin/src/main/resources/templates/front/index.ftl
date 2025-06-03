@@ -355,7 +355,7 @@
           <div>
             <label class="block text-sm text-theme mb-1">图标</label>
             <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
+              <div id="editLinkIconPreview" class="w-8 h-8 bg-theme rounded flex items-center justify-center">
                 <img id="previewLinkIcon" src="" alt="" class="w-4 h-4">
               </div>
               <div class="flex-1">
@@ -822,6 +822,38 @@
     }
 
 
+    // 链接相关JS
+
+    //监听url变化
+    $('#editLinkUrl').on('input blur', function() {
+      const editLinkUrl = $(this).val();
+      if (editLinkUrl) {
+        const iconUrl=getFavicon(editLinkUrl)
+        $('#editLinkIcon').val(iconUrl);
+
+        //预览图标
+        $("#previewLinkIcon").attr("src",iconUrl)
+
+        // if (iconUrl&&$('#editLinkIconPreview').find("img").length==0) {
+          // $('#editLinkIconPreview').append('<img  src="' + iconUrl + '" alt="" class="w-4 h-4">')
+          <#--$('#editLinkIconPreview').append(`<img  src="${r'${iconUrl}'}" alt="" class="w-4 h-4">`)-->
+        // }
+
+
+      }
+    });
+
+    //根据域名获取icon图标地址
+    function getFavicon(url) {
+      let domain = url;
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        domain = new URL(url).hostname;
+      }
+      //待确定
+      //ttps://xxapi.cn/doc/ico
+      //https://www.favicon.vip/
+      return `https://icon.bqb.cool?url=${r'${domain}'}`;
+    }
 
     // 打开编辑弹框
     function openLinkEditModal(linkId) {
@@ -833,7 +865,8 @@
       $('#editLinkIcon').val('');
       $('#editLinkUrl').val('');
       $('#editLinkCategoryId').val('');
-      $('#previewLinkIcon').hide();
+      $('#previewLinkIcon').attr("src","");
+
       
       if (linkId) {
         //编辑
@@ -851,9 +884,12 @@
               $('#editLinkDescription').val(res.data.description);
               $('#editLinkCategoryId').val(res.data.categoryId);
               $('#editLinkIcon').val(res.data.icon);
-              if (res.data.icon) {
-                $('#previewLinkIcon').attr('src', res.data.icon).show();
-              }
+              // 手动触发事件
+              $('#editLinkUrl').trigger('input');
+
+              // if (res.data.icon) {
+              //   $('#previewLinkIcon').attr('src', res.data.icon).show();
+              // }
             }else{
               toastr.error(res.msg)
             }
@@ -869,55 +905,6 @@
       $('#editLinkModal').removeClass('flex').addClass('hidden');
     }
 
-    //监听url变化
-    $('#editLinkUrl').on('blur', function() {
-      const editLinkUrl = $(this).val();
-      if (editLinkUrl) {
-        const iconUrl=getFavicon(editLinkUrl)
-        $('#editLinkIcon').val(iconUrl);
-
-        //预览图标
-        // previewIcon()
-        if (iconUrl) {
-          $('#previewIcon').attr('src', iconUrl).show();
-        } else {
-          $('#previewIcon').hide();
-        }
-      }
-    });
-    // 监听图标地址变化
-    // $('#editLinkUrl').on('input', function() {
-    //   console.log("icon change...")
-    //   const iconUrl = $(this).val();
-    //   if (iconUrl) {
-    //     $('#previewIcon').attr('src', iconUrl).show();
-    //   } else {
-    //     $('#previewIcon').hide();
-    //   }
-    // });
-    function previewIcon(){
-      const iconUrl = $('#editLinkIcon').val();
-      if (iconUrl) {
-        $('#previewIcon').attr('src', iconUrl).show();
-      } else {
-        $('#previewIcon').hide();
-      }
-    }
-    //根据域名获取icon图标地址
-    function getFavicon(url) {
-      let domain = url;
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        domain = new URL(url).hostname;
-      }
-      //待确定
-      //ttps://xxapi.cn/doc/ico
-      //https://www.favicon.vip/
-      return `https://icon.bqb.cool/?url=${r'${domain}'}`;
-    }
-
-
-
-    // 链接相关js
     // 保存编辑
     function saveLink() {
       const linkId = $('#editLinkId').val().trim();
@@ -1007,12 +994,13 @@
 
           if(res.code==0){
             res.data.forEach(link=>{
+              // <i class="fas fa-code text-base text-purple-500"></i>
               linkList.append(`
                   <div   class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
                    <div class="flex items-start justify-between mb-2">
                        <div class="flex items-center space-x-2">
                          <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                          <i class="fas fa-code text-base text-purple-500"></i>
+                           <img  src="${r'${link.icon}'}" class="w-6 h-6">
                          </div>
                          <a href="javascript:void(0)"  onclick="openLink('${r'${link.url}'}')"><h3  class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3></a>
                        </div>
