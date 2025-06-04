@@ -62,8 +62,6 @@
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
 
-    .hidden { display: none !important; }
-
     /* 移动端导航菜单 */
     @media (max-width: 768px) {
       .mobile-menu {
@@ -74,6 +72,7 @@
         transform: translateX(0);
       }
     }
+
   </style>
 </head>
 <body class="bg-theme text-theme min-h-screen transition-colors duration-200">
@@ -98,7 +97,7 @@
             <div class="relative hidden md:block">
               <input type="text" id="searchInput" placeholder="搜索链接..."
                 class="w-80 px-4 py-1.5 pl-10 bg-card-theme rounded text-theme border border-theme focus:outline-none focus:border-purple-500 transition-colors duration-200">
-              <i id="searchbtn" class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-secondary"></i>
             </div>
             
             <div class="flex items-center space-x-4">
@@ -465,32 +464,25 @@
 
   <script>
     let BASE_API="${baseUrl}"
-    function toggleThemeIcon(theme){
-      if (theme === 'dark') {
-        $(themeToggle).find('.fa-moon').removeClass('hidden');
-        $(themeToggle).find('.fa-sun').addClass('hidden');
-      } else {
-        $(themeToggle).find('.fa-moon').addClass('hidden');
-        $(themeToggle).find('.fa-sun').removeClass('hidden');
-      }
-    }
+
     $(document).ready(function() {
+
       // 主题切换功能
       const htmlElement = document.documentElement;
-      const themeToggle = $('#themeToggle');
-      
       // 检查本地存储中的主题设置
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
         htmlElement.classList.remove('dark', 'light');
         htmlElement.classList.add(savedTheme);
-
         //切换主题图标
         toggleThemeIcon(savedTheme)
+      }else{
+        //设置默认主题
+        toggleThemeIcon("dark")
       }
 
       // 切换主题
-      themeToggle.on('click', function() {
+      $('#themeToggle').on('click', function() {
         const isDark = htmlElement.classList.contains('dark');
         htmlElement.classList.remove('dark', 'light');
         const newTheme = isDark ? 'light' : 'dark';
@@ -502,25 +494,17 @@
       });
 
       //搜索
-      $('#searchBtn').on('click', handleSearch);
-      $('#searchInput').on('keydown', function(e) {
+      $('#searchInput, #mobileSearchInput').on('keydown', function(e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
-          handleSearch();
+          handleSearch($(this).attr('id'));
         }
       });
-      function handleSearch() {
-        const keyword = $('#searchInput').val().trim();
-        if (keyword) {
-          loadLinks(null,keyword)
-        } else {
-          toastr.warning('请输入搜索内容');
-        }
-      }
 
-      // 收藏功能
-      // $('.fa-star').on('click', function() {
-      //   $(this).toggleClass('far fas text-purple-500 text-theme-secondary');
-      // });
+      // 搜索图标点击事件
+      $('.fa-search').on('click', function() {
+        const inputId = $(this).closest('.relative').find('input').attr('id');
+        handleSearch(inputId);
+      });
 
       // 分类点击筛选
       $('nav button').on('click', function() {
@@ -556,18 +540,6 @@
         $('#mobileMenu').removeClass('active');
       });
 
-      // 移动端搜索
-      $('#mobileSearchInput').on('keydown', function(e) {
-        if (e.key === 'Enter' || e.keyCode === 13) {
-          const keyword = $(this).val().trim();
-          if (keyword) {
-            loadLinks(null, keyword);
-            $('#mobileMenu').removeClass('active');
-          } else {
-            toastr.warning('请输入搜索内容');
-          }
-        }
-      });
 
       // 点击移动端菜单外部关闭菜单
       $(document).on('click', function(e) {
@@ -585,6 +557,29 @@
       }
     });
 
+    function toggleThemeIcon(theme){
+      if (theme === 'dark') {
+        $('#themeToggle').find('.fa-moon').removeClass('hidden');
+        $('#themeToggle').find('.fa-sun').addClass('hidden');
+      } else {
+        $('#themeToggle').find('.fa-moon').addClass('hidden');
+        $('#themeToggle').find('.fa-sun').removeClass('hidden');
+      }
+    }
+
+    // 将handleSearch函数移到document.ready外部
+    function handleSearch(inputId) {
+      const keyword = $(`#${r'${inputId}'}`).val().trim();
+      if (keyword) {
+        loadLinks(null, keyword);
+        // 如果是移动端搜索，关闭移动菜单
+        if (inputId === 'mobileSearchInput') {
+          $('#mobileMenu').removeClass('active');
+        }
+      } else {
+        toastr.warning('请输入搜索内容');
+      }
+    }
 
     initOp()
     //页面加载初始化操作

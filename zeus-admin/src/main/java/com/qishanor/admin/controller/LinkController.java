@@ -27,7 +27,7 @@ public class LinkController {
 
     @GetMapping("/list")
     public Object list(String categoryId,String linkTitle){
-        List<Link> lists =linkService.list(Wrappers.<Link>lambdaQuery().eq(StrUtil.isNotBlank(categoryId),Link::getCategoryId,categoryId).eq(StrUtil.isNotBlank(linkTitle), Link::getTitle,linkTitle));
+        List<Link> lists =linkService.list(Wrappers.<Link>lambdaQuery().eq(StrUtil.isNotBlank(categoryId),Link::getCategoryId,categoryId).like(StrUtil.isNotBlank(linkTitle), Link::getTitle,linkTitle));
 
         return R.ok(lists);
     }
