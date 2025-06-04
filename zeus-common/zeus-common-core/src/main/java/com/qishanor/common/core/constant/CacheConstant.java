@@ -1,4 +1,4 @@
-package com.qishanor.common.data.constant;
+package com.qishanor.common.core.constant;
 
 /**
  * @description: 缓存的key 常量

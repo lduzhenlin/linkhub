@@ -1,6 +1,6 @@
-package com.qishanor.common.data.satoken;
+package com.qishanor.common.core.satoken;
 
-import com.qishanor.common.data.util.R;
+import com.qishanor.common.core.util.R;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

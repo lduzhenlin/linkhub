@@ -1,8 +1,8 @@
 
-package com.qishanor.common.data.util;
+package com.qishanor.common.core.util;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.qishanor.common.data.constant.CommonConstant;
+import com.qishanor.common.core.constant.CommonConstant;
 import lombok.*;
 import lombok.experimental.Accessors;
 import java.io.Serializable;

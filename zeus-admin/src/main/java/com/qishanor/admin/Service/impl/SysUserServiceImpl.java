@@ -1,6 +1,5 @@
 package com.qishanor.admin.Service.impl;
 
-import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
@@ -9,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qishanor.admin.Service.SysUserService;
 import com.qishanor.admin.entity.SysUser;
 import com.qishanor.admin.mapper.SysUserMapper;
-import com.qishanor.common.data.util.R;
+import com.qishanor.common.core.util.R;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

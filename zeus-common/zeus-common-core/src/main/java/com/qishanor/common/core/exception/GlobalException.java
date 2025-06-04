@@ -1,6 +1,6 @@
-package com.qishanor.common.data.exception;
+package com.qishanor.common.core.exception;
 
-import com.qishanor.common.data.util.R;
+import com.qishanor.common.core.util.R;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

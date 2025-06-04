@@ -882,8 +882,8 @@
               // 手动触发事件
               $('#editLinkUrl').trigger('input');
 
-              // if (res.data.icon) {
-              //   $('#previewLinkIcon').attr('src', res.data.icon).show();
+              // if (res.core.icon) {
+              //   $('#previewLinkIcon').attr('src', res.core.icon).show();
               // }
             }else{
               toastr.error(res.msg)

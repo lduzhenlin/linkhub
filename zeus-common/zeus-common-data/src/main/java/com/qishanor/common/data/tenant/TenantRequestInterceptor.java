@@ -1,6 +1,6 @@
 package com.qishanor.common.data.tenant;
 
-import com.qishanor.common.data.constant.CommonConstant;
+import com.qishanor.common.core.constant.CommonConstant;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;

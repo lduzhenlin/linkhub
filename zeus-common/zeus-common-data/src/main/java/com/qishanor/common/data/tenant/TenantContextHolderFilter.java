@@ -17,10 +17,8 @@
 
 package com.qishanor.common.data.tenant;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
-import com.qishanor.common.data.constant.CacheConstant;
-import com.qishanor.common.data.constant.CommonConstant;
+import com.qishanor.common.core.constant.CommonConstant;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -29,8 +27,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

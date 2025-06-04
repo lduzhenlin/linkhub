@@ -16,7 +16,10 @@
 
 	<dependencies>
 
-
+		<dependency>
+			<groupId>com.qishanor</groupId>
+			<artifactId>zeus-common-core</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.qishanor</groupId>
 			<artifactId>zeus-common-data</artifactId>

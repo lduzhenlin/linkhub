@@ -1,4 +1,4 @@
-package com.qishanor.common.data.satoken;
+package com.qishanor.common.core.satoken;
 
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
