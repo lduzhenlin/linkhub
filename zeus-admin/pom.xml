@@ -16,15 +16,10 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.qishanor</groupId>
-			<artifactId>zeus-common-core</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.qishanor</groupId>
 			<artifactId>zeus-common-data</artifactId>
-			<version>${project.parent.version}</version>
 		</dependency>
 
 		<dependency>
@@ -59,21 +54,9 @@
 
 	<build>
 		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.boot</groupId>-->
-<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--			</plugin>-->
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 

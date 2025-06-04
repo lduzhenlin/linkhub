@@ -989,7 +989,6 @@
 
           if(res.code==0){
             res.data.forEach(link=>{
-              // <i class="fas fa-code text-base text-purple-500"></i>
               linkList.append(`
                   <div   class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
                    <div class="flex items-start justify-between mb-2">
@@ -1021,10 +1020,13 @@
 
     //书签点击打开链接
     function openLink(linkUrl){
-      if(!linkUrl.startsWith("http")||linkUrl.startsWith("https")){
-        linkUrl="http://"+linkUrl;
+      if(!linkUrl) {
+        return;
       }
-      window.open(linkUrl,"_blank")
+      if(!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://")){
+        linkUrl = "http://" + linkUrl;
+      }
+      window.open(linkUrl, "_blank");
     }
 
 
