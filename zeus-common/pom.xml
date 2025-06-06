@@ -18,8 +18,9 @@
 		<module>zeus-common-bom</module>
 		<module>zeus-common-core</module>
 		<module>zeus-common-data</module>
+        <module>zeus-common-oss</module>
 
 
-	</modules>
+    </modules>
 
 </project>

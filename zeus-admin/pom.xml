@@ -18,11 +18,11 @@
 
 		<dependency>
 			<groupId>com.qishanor</groupId>
-			<artifactId>zeus-common-core</artifactId>
+			<artifactId>zeus-common-data</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.qishanor</groupId>
-			<artifactId>zeus-common-data</artifactId>
+			<artifactId>zeus-common-oss</artifactId>
 		</dependency>
 
 		<dependency>

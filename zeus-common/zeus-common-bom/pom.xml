@@ -16,6 +16,7 @@
         <mybatis-plus.version>3.5.12</mybatis-plus.version>
         <sa-token.version>1.42.0</sa-token.version>
         <ttl.version>2.14.5</ttl.version>
+        <aws.s3.version>1.12.261</aws.s3.version>
 
     </properties>
 
@@ -30,6 +31,11 @@
             <dependency>
                 <groupId>com.qishanor</groupId>
                 <artifactId>zeus-common-data</artifactId>
+                <version>${zeus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qishanor</groupId>
+                <artifactId>zeus-common-oss</artifactId>
                 <version>${zeus.version}</version>
             </dependency>
 
@@ -60,6 +66,13 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${ttl.version}</version>
+            </dependency>
+
+            <!--亚马逊s3标准存储-->
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-s3</artifactId>
+                <version>${aws.s3.version}</version>
             </dependency>
 
 
