@@ -1,18 +1,15 @@
-package com.qishanor.common.file.local;
+package com.qishanor.common.file.engine;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qishanor.common.file.FileTemplate;
-import com.qishanor.common.file.service.SysFileConfig;
-import com.qishanor.common.file.service.SysFileConfigService;
+import com.qishanor.common.file.repository.FileConfig;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -31,11 +28,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LocalFileTemplate implements FileTemplate {
 
-	private final SysFileConfig fileConfig;
+	private final FileConfig fileConfig;
 
-	public SysFileConfig getFileConfig(){
-		return fileConfig;
-	}
+
+	public FileConfig getFileConfig(){return fileConfig;}
 
 	/**
 	 * 创建bucket

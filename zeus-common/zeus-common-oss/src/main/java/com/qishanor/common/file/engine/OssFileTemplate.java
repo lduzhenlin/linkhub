@@ -15,7 +15,7 @@
  * Author: zeus
  */
 
-package com.qishanor.common.file.oss;
+package com.qishanor.common.file.engine;
 
 import cn.hutool.core.text.CharPool;
 import cn.hutool.core.util.StrUtil;
@@ -29,7 +29,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.qishanor.common.file.FileTemplate;
-import com.qishanor.common.file.service.SysFileConfig;
+import com.qishanor.common.file.repository.FileConfig;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -51,12 +51,9 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 	private AmazonS3 amazonS3;
 
-	private final SysFileConfig fileConfig;
+	private final FileConfig fileConfig;
 
-
-	public SysFileConfig getFileConfig(){
-		return fileConfig;
-	}
+	public FileConfig getFileConfig(){return fileConfig;}
 
 	/**
 	 * 查询全部bucket

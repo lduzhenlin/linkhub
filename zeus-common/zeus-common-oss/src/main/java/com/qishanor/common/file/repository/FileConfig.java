@@ -1,13 +1,17 @@
-package com.qishanor.common.file.service;
+package com.qishanor.common.file.repository;
 
+import cn.hutool.core.util.IdUtil;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 @Data
 public class FileConfig {
 
     private Long id;
 
-    private String storageType;
+    private String storageType="local";
     /**
      * 是否开启
      */
@@ -16,12 +20,12 @@ public class FileConfig {
     /**
      * 默认的存储桶名称
      */
-    private String bucketName;
+    private String bucketName="images";
 
     /**
      * 本地存储默认路径
      */
-    private String basePath;
+    private String basePath="/upload";
 
     /**
      * 对象存储服务的URL
@@ -58,5 +62,17 @@ public class FileConfig {
      * 应用ID
      */
     private String appId;
+
+    /**
+     * 最大线程数，默认： 100
+     */
+    private Integer maxConnections;
+
+    public String generateFileName(MultipartFile multipartFile) {
+        String name = multipartFile.getOriginalFilename();
+        String ext  = Objects.requireNonNull(name).substring(name.lastIndexOf("."));
+//		return  UUID.randomUUID() + ext.toLowerCase();
+        return IdUtil.getSnowflakeNextIdStr()+ext.toLowerCase();
+    }
 
 }

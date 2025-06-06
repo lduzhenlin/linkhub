@@ -3,7 +3,7 @@ package com.qishanor.common.file;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.qishanor.common.file.service.SysFileConfig;
+import com.qishanor.common.file.repository.FileConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ public interface FileTemplate  {
 
 
 
-	SysFileConfig getFileConfig();
+	FileConfig getFileConfig();
 
 	/**
 	 * 存储桶bucket 操作
