@@ -8,7 +8,7 @@ OssFileTemplate   OSS存储实现类  例如阿里云 腾讯云 mino等标准s3�
 FileConfig  配置信息实体类
 FileConfigManager  配置信息加载类 ，数据配置>yml文件配置>默认配置（默认使用 local 存储在/upload）
 
-YamlConfigRepository yml文件配置信息加载类, 配置文件中enable没有实际作用
+YamlConfigRepository yml文件配置信息加载类, 配置文件中enable=false,则配置不生效
 DbConfigRepository   数据库配置信息加载类  数据表为：sys_file_config
 
 

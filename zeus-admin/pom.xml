@@ -24,6 +24,12 @@
 			<groupId>com.qishanor</groupId>
 			<artifactId>zeus-common-oss</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.qishanor</groupId>
+			<artifactId>zeus-common-sms</artifactId>
+		</dependency>
+
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -53,7 +59,8 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 		</dependency>
 
-	</dependencies>
+
+    </dependencies>
 
 	<build>
 		<plugins>

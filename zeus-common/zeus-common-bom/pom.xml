@@ -38,6 +38,11 @@
                 <artifactId>zeus-common-oss</artifactId>
                 <version>${zeus.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.qishanor</groupId>
+                <artifactId>zeus-common-sms</artifactId>
+                <version>${zeus.version}</version>
+            </dependency>
 
 
             <!--hutool-->

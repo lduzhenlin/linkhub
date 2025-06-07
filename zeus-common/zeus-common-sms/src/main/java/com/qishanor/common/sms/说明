@@ -1,0 +1,32 @@
+
+
+SmsTemplate 为短信操作接口类
+SmsAliTemplate Ali短信实现类
+
+数据加载相关操作
+SmsConfig  配置信息实体类
+SmsConfigManager  配置信息加载类 ，数据配置>yml文件配置>默认配置（默认没有任何配置）
+SmsYamlConfigRepository yml文件配置信息加载类, 配置文件中enable=false,则配置不生效
+SmsDbConfigRepository   数据库配置信息加载类  数据表为：sys_sms_config
+
+发送日志记录操作
+SmsSendLog  短信发送日志实体
+SmsSendPostProcessor  短信发送之后，后置处理器
+SmsSendPostProcessorImpl 短信发送之后，后置处理器实现类
+
+SmsSendPostProcessor 如果默认实现不符合日志记录要求，可以实现这个接口，然后交给spring管理，既可以完成短信发送后的后置处理操作
+
+
+
+
+
+yaml 文件中配置案例
+
+sms:
+  supplier:
+    enable: true
+    type: ali
+    signName:
+    regionId:
+    accessKey:
+    secretKey:

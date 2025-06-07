@@ -20,3 +20,12 @@ file:
     bucketName:
     accessKey:
     secretKey:
+
+sms:
+  supplier:
+    enable: true
+    type: ali
+    signName: 启善智能
+    regionId: cn-qingdao
+    accessKey: LTAI5tGdfdQNma1oYRVPzmv7
+    secretKey: UBSjsDeVd9JsJkrJGFw0j7UGUs7Myz

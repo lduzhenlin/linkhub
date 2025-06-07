@@ -9,7 +9,7 @@ import java.util.Objects;
 @Data
 public class FileConfig {
 
-    private Long id;
+    private Long configId;
 
     private String storageType="local";
     /**

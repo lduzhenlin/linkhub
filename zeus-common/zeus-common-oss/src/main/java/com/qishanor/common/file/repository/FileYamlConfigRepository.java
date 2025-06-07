@@ -1,16 +1,19 @@
 package com.qishanor.common.file.repository;
 
+import cn.hutool.core.convert.Convert;
 import org.springframework.core.env.Environment;
 
-public class YamlConfigRepository {
+public class FileYamlConfigRepository {
 
     public static FileConfig loadConfigFromYaml(Environment env) {
         FileConfig fileConfig=new FileConfig();
+        if (env.getProperty("file.storage.enable") != null) {
+            fileConfig.setEnable(Convert.toBool(env.getProperty("file.storage.enable")));
+        }
+        if(!fileConfig.getEnable())return fileConfig;
+
         if (env.getProperty("file.storage.type") != null) {
             fileConfig.setStorageType(env.getProperty("file.storage.type"));
-        }
-        if (env.getProperty("file.storage.enable") != null) {
-            fileConfig.setEnable("0".equals(env.getProperty("file.storage.enable"))?Boolean.FALSE:Boolean.TRUE);
         }
         if (env.getProperty("file.storage.bucketName") != null) {
             fileConfig.setBucketName(env.getProperty("file.storage.bucketName"));

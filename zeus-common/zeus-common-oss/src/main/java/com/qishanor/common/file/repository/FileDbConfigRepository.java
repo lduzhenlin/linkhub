@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DbConfigRepository {
+public class FileDbConfigRepository {
 
 
     public static FileConfig loadConfigFromDb(Environment env) {

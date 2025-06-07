@@ -11,13 +11,13 @@ public class FileConfigManager {
     private static FileConfig fileConfig=new FileConfig();
 
     public static FileConfig loadConfig(Environment env){
-        YamlConfigRepository.loadConfigFromYaml(env);
+        fileConfig=FileYamlConfigRepository.loadConfigFromYaml(env);
         loadFromDatabase(env);
         return fileConfig;
     }
 
     private static void loadFromDatabase(Environment env) {
-        FileConfig dbConfig = DbConfigRepository.loadConfigFromDb(env);
+        FileConfig dbConfig = FileDbConfigRepository.loadConfigFromDb(env);
         if(ObjectUtil.isNotEmpty(dbConfig)){
             BeanUtil.copyProperties(dbConfig,fileConfig);
         }
