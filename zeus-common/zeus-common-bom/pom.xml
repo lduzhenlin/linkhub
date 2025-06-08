@@ -11,12 +11,14 @@
     <description>zeus 公共版本控制，在此pom定义的依赖，全局业务微服务不需要指定版本。</description>
 
     <properties>
-        <zeus.version>1.0.0</zeus.version>
+        <project.version>1.0.0</project.version>
         <hutool.version>5.8.37</hutool.version>
         <mybatis-plus.version>3.5.12</mybatis-plus.version>
-        <sa-token.version>1.42.0</sa-token.version>
+        <sa-token.version>1.44.0</sa-token.version>
         <ttl.version>2.14.5</ttl.version>
         <aws.s3.version>1.12.261</aws.s3.version>
+        <ali.sms.core>4.6.0</ali.sms.core>
+        <ali.sms.dysmsapi>2.1.0</ali.sms.dysmsapi>
 
     </properties>
 
@@ -25,24 +27,31 @@
             <dependency>
                 <groupId>com.qishanor</groupId>
                 <artifactId>zeus-common-core</artifactId>
-                <version>${zeus.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.qishanor</groupId>
                 <artifactId>zeus-common-data</artifactId>
-                <version>${zeus.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.qishanor</groupId>
                 <artifactId>zeus-common-oss</artifactId>
-                <version>${zeus.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.qishanor</groupId>
                 <artifactId>zeus-common-sms</artifactId>
-                <version>${zeus.version}</version>
+                <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.qishanor</groupId>
+                <artifactId>zeus-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
 
 
             <!--hutool-->
@@ -73,11 +82,23 @@
                 <version>${ttl.version}</version>
             </dependency>
 
-            <!--亚马逊s3标准存储-->
+            <!--亚马逊s3标准存储oss-->
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>${aws.s3.version}</version>
+            </dependency>
+
+            <!--阿里云SMS服务SDK-->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-core</artifactId>
+                <version>${ali.sms.core}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+                <version>${ali.sms.dysmsapi}</version>
             </dependency>
 
 

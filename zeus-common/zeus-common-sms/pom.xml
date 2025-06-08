@@ -19,27 +19,16 @@
             <artifactId>zeus-common-data</artifactId>
         </dependency>
 
-        <!-- 阿里云 -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.6.0</version>
-        </dependency>
         <!-- 阿里云SMS服务SDK -->
         <dependency>
             <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-            <version>2.1.0</version>
         </dependency>
 
-
-        <!-- 腾讯云 -->
-<!--        <dependency>-->
-<!--            <groupId>com.tencentcloudapi</groupId>-->
-<!--            <artifactId>tencentcloud-sdk-java-sms</artifactId>-->
-<!--            <version>3.1.777</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
 
     </dependencies>
 

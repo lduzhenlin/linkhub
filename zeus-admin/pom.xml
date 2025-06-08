@@ -28,6 +28,10 @@
 			<groupId>com.qishanor</groupId>
 			<artifactId>zeus-common-sms</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.qishanor</groupId>
+			<artifactId>zeus-common-security</artifactId>
+		</dependency>
 
 
 

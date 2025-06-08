@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,7 +107,10 @@ public class LocalFileTemplate implements FileTemplate {
 
 		//写入文件
 		File destFile = FileUtil.file(path + FileUtil.FILE_SEPARATOR + objectName);
-		FileUtil.writeFromStream(file.getInputStream(), destFile);
+		//这个是保存在项目所在磁盘下
+//		FileUtil.writeFromStream(file.getInputStream(), destFile);
+		//这种方式是保存在当前项目下
+		Files.copy(file.getInputStream(), destFile.toPath());
 		return objectName;
 	}
 

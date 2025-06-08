@@ -10,7 +10,7 @@ public class SmsYamlConfigRepository {
         if (env.getProperty("sms.supplier.enable") != null) {
             smsConfig.setEnable(Convert.toBool(env.getProperty("file.storage.enable")));
         }
-        if(!smsConfig.getEnable())return smsConfig;
+        if(smsConfig.getEnable()==null||!smsConfig.getEnable())return smsConfig;
 
         if (env.getProperty("sms.supplier.type") != null) {
             smsConfig.setSupplier(env.getProperty("sms.supplier.type"));

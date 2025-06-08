@@ -52,27 +52,5 @@ public class UploadController {
         return R.ok();
     }
 
-//    private static void validateS3ObjectContent(S3Object s3Object) {
-//        try (InputStream inputStream = s3Object.getObjectContent()) {
-//            // 检查输入流是否有数据
-//            long contentLength = inputStream.available(); // 获取对象大小（字节数）
-//            if (contentLength <= 0) {
-//                System.out.println("对象内容为空");
-//                return;
-//            }
-//
-//            // 或通过读取流验证是否有数据（适用于流式处理场景）
-//            byte[] buffer = new byte[1024];
-//            int bytesRead = inputStream.read(buffer);
-//            if (bytesRead == -1) { // 流已结束且无数据
-//                System.out.println("对象内容为空");
-//            } else {
-//                System.out.println("对象内容有效，大小：" + contentLength + " 字节");
-//            }
-//
-//        } catch (IOException e) {
-//            System.out.println("读取对象内容失败：" + e.getMessage());
-//        }
-//    }
 
 }

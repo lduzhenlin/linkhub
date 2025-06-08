@@ -10,7 +10,7 @@ public class FileYamlConfigRepository {
         if (env.getProperty("file.storage.enable") != null) {
             fileConfig.setEnable(Convert.toBool(env.getProperty("file.storage.enable")));
         }
-        if(!fileConfig.getEnable())return fileConfig;
+        if(fileConfig.getEnable()==null||!fileConfig.getEnable())return fileConfig;
 
         if (env.getProperty("file.storage.type") != null) {
             fileConfig.setStorageType(env.getProperty("file.storage.type"));

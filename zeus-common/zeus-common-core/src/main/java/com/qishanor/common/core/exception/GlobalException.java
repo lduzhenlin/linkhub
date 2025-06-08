@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  **/
 
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalException {
 
     // 全局异常拦截（拦截项目中的所有异常）
@@ -55,17 +55,17 @@ public class GlobalException {
 //    }
 
     // 全局异常拦截（拦截项目中的所有异常）
-    @ResponseBody
-    @ExceptionHandler(Exception.class)
-    public Object globalException(Exception e, HttpServletRequest request, HttpServletResponse response){
-
-        // 打印堆栈，以供调试
-        log.error("异常信息：",e);
-
-        // 当做普通异常, 输出：500 + 异常信息
-        // 返回给前端
-        return R.failed(e.getMessage());
-    }
+//    @ResponseBody
+//    @ExceptionHandler(Exception.class)
+//    public Object globalException(Exception e, HttpServletRequest request, HttpServletResponse response){
+//
+//        // 打印堆栈，以供调试
+//        log.error("异常信息：",e);
+//
+//        // 当做普通异常, 输出：500 + 异常信息
+//        // 返回给前端
+//        return R.failed(e.getMessage());
+//    }
 
 
 

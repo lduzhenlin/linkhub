@@ -11,15 +11,16 @@
 
 	<artifactId>zeus-common</artifactId>
 	<packaging>pom</packaging>
-
 	<description>zeus 公共聚合模块</description>
+
 
 	<modules>
 		<module>zeus-common-bom</module>
 		<module>zeus-common-core</module>
 		<module>zeus-common-data</module>
         <module>zeus-common-oss</module>
-
+		<module>zeus-common-sms</module>
+		<module>zeus-common-security</module>
 
     </modules>
 
