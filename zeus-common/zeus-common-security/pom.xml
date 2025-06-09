@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.qishanor</groupId>
+        <artifactId>zeus-common</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>zeus-common-security</artifactId>
+    <packaging>jar</packaging>
+    <description>单点登录认证模块</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.qishanor</groupId>
+            <artifactId>zeus-common-data</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-webmvc</artifactId>-->
+<!--        </dependency>-->
+
+    </dependencies>
+
+</project>
