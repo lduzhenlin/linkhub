@@ -6,30 +6,29 @@ import com.qishanor.common.core.constant.CacheConstant;
 import com.qishanor.entity.SysUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.qishanor.common.core.constant.CacheConstant.TENANT_DETAIL;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DataLoaderConfig {
+public class ApplicationDataLoader {
 
     private final SysUserService userService;
 
     private final CacheManager cacheManager;
 
+    /**
+     * 监听应用启动事件，应用启动后执行的操作
+     *
+     * 加载租户数据到缓存中
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void loadDataAfterStartup() {
         // 从数据库加载数据

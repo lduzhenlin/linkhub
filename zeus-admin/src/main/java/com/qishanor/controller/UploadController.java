@@ -1,11 +1,13 @@
 package com.qishanor.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.lang.Console;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.qishanor.common.core.util.R;
 import com.qishanor.common.file.FileTemplate;
+import com.qishanor.framework.util.ProxyUrlToMultipartFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,17 @@ public class UploadController {
 
     private final FileTemplate fileTemplate;
 
+    @SaIgnore
+    @RequestMapping("/api/test")
+    public R test(){
+
+        try {
+            ProxyUrlToMultipartFile.convert("https://icon.bqb.cool?url=dasai.lanqiao.cn");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return R.ok();
+    }
 
     @RequestMapping("/api/upload")
     private R upload(@RequestParam("files[]") MultipartFile[] files) throws Exception {
