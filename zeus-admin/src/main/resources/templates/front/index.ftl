@@ -463,7 +463,7 @@
   </div>
 
   <script>
-    let BASE_API="${baseUrl}"
+    let BASE_API="/api"
 
     $(document).ready(function() {
 

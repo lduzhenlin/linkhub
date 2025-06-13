@@ -1,10 +1,12 @@
 package com.qishanor.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
+import com.qishanor.common.data.tenant.TenantContextHolder;
 import com.qishanor.entity.SysUser;
 import com.qishanor.entity.vo.SysUserVo;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -27,9 +29,10 @@ public class UserController {
 
     private final SysUserService sysUserService;
 
+    @SaIgnore
     @PostMapping("/login")
     public Object login(String tel, String password) {
-
+        //设置租户
         SysUser dbUser=sysUserService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername,tel).or().eq(SysUser::getTel,tel));
         if(ObjUtil.isEmpty(dbUser)||!BCrypt.checkpw(password,dbUser.getPassword())){
             return R.failed("用户名或密码错误");
@@ -48,12 +51,13 @@ public class UserController {
 
     }
 
-
+    @SaIgnore
     @PostMapping("/register")
     public Object register(SysUser user) {
         return sysUserService.saveSysUser(user);
     }
 
+    @SaIgnore
     @PostMapping("/logout")
     public Object logout(String userId){
         if(StrUtil.isBlank(userId)){
@@ -64,6 +68,7 @@ public class UserController {
         return R.ok();
     }
 
+    @SaIgnore
     @GetMapping("/isLogin")
     public Object isLogin(){
         return R.ok(StpUtil.isLogin());

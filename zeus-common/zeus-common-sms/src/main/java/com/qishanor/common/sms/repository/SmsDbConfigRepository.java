@@ -6,11 +6,13 @@ import cn.hutool.db.Entity;
 import com.qishanor.common.sms.Constant;
 import com.qishanor.common.sms.log.SmsSendLog;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 public class SmsDbConfigRepository {
 
     public static SmsConfig loadConfigFromDb(Environment env) {
@@ -31,7 +33,8 @@ public class SmsDbConfigRepository {
 
             return entities.get(0);
         } catch (SQLException e) {
-            throw new RuntimeException("读取数据库配置失败", e);
+            log.error("读取数据库配置失败", e);
+            return null;
         }
     }
 
@@ -51,7 +54,7 @@ public class SmsDbConfigRepository {
 
 
         } catch (SQLException e) {
-            throw new RuntimeException("读取数据库配置失败", e);
+            log.error("读取数据库配置失败", e);
         }
     }
 }

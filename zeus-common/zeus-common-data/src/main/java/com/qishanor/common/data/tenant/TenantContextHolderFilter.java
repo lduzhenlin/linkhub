@@ -1,25 +1,14 @@
-/*
- *    Copyright (c) 2018-2025, zeus All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * Neither the name of the pig4cloud.com developer nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- * Author: zeus
- */
 
 package com.qishanor.common.data.tenant;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Console;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import com.qishanor.common.core.constant.CacheConstant;
 import com.qishanor.common.core.constant.CommonConstant;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,11 +16,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 租户过滤器
@@ -40,15 +36,15 @@ import org.springframework.web.filter.GenericFilterBean;
 @Component
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class TenantContextHolderFilter extends GenericFilterBean {
+public class TenantContextHolderFilter extends GenericFilterBean  {
 
     private final static String UNDEFINED_STR = "undefined";
 
-//    private final CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     @Override
     @SneakyThrows
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
@@ -62,14 +58,14 @@ public class TenantContextHolderFilter extends GenericFilterBean {
         } else if (StrUtil.isNotBlank(paramTenantId) && !StrUtil.equals(UNDEFINED_STR, paramTenantId)&& !StrUtil.equals("null", headerTenantId)) {
             TenantContextHolder.setTenantId(Long.parseLong(paramTenantId));
         }
-//        else {
-//            TenantContextHolder.setTenantId(CommonConstant.TENANT_ID_1);
-//        }
+        else {
+            TenantContextHolder.setTenantId(null);
+        }
 
-//        if (!checkTenantStatus(request, response)) {
-//            TenantContextHolder.clear();
-//            return;
-//        }
+        if (!isValidTenantStatus(request, response)) {
+            TenantContextHolder.clear();
+            return;
+        }
 
         try {
             filterChain.doFilter(request, response);
@@ -78,36 +74,39 @@ public class TenantContextHolderFilter extends GenericFilterBean {
         }
     }
 
+
     /**
-     * 检查租户状态
+     * 检查租户状态是否有效
      *
      * @param request  请求
      * @param response 响应
      * @return boolean
      */
-    private boolean checkTenantStatus(HttpServletRequest request, HttpServletResponse response) {
+    private boolean isValidTenantStatus(HttpServletRequest request, HttpServletResponse response) {
+        Console.log(request.getRequestURI());
+        if("/".equals(request.getRequestURI())){return true;}
         // 如果是获取租户列表请求跳过检查
-        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/user/login")) {
+        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/user/register","/user/login","/user/isLogin")) {
             return true;
         }
 
         // 从缓存管理器中获取租户详情缓存，如果缓存不存在也放行（可能是缓存未初始化）
-//        Cache cache = cacheManager.getCache(CacheConstant.TENANT_DETAIL);
-//        if (cache == null) {
-//            return true;
-//        }
+        Cache cache = cacheManager.getCache(CacheConstant.TENANT_DETAIL);
+        if (cache == null) {
+            return true;
+        }
 
         //获取所有租户列表，如果列表为空则放行
-//        List<SysTenant> tenantList = cache.get(SimpleKey.EMPTY, List.class);
-//        if (CollUtil.isEmpty(tenantList)) {
-//            return true;
-//        }
+        List<Map<String,Object>> tenantList = cache.get(CacheConstant.TENANT_DETAIL, List.class);
+        if (CollUtil.isEmpty(tenantList)) {
+            return true;
+        }
 
-        //检查当前租户ID（从TenantContextHolder获取）是否存在于有效租户列表中
-//        boolean exist = tenantList.stream().anyMatch(tenant -> NumberUtil.equals(tenant.getId(), TenantContextHolder.getTenantId()));
-//        if (exist) {
-//            return true;
-//        }
+//        检查当前租户ID（从TenantContextHolder获取）是否存在于有效租户列表中
+        boolean exist = tenantList.stream().anyMatch(tenant -> NumberUtil.equals((Long) tenant.get("tenant_id"), TenantContextHolder.getTenantId()));
+        if (exist) {
+            return true;
+        }
 
         response.setStatus(HttpStatus.UPGRADE_REQUIRED.value());
         return false;

@@ -25,7 +25,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(StrUtil.isBlank(sysUser.getTel())||StrUtil.isBlank(sysUser.getPassword())){
             return R.failed("手机号或密码不能为空");
         }
-        List<SysUser> dbUsers=baseMapper.selectList(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getTel,sysUser.getTel()));
+        List<SysUser> dbUsers=baseMapper.selectList(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getTel,sysUser.getTel()).or().eq(SysUser::getUsername,sysUser.getTel()));
         if(CollUtil.size(dbUsers)>0){
             return R.failed("手机号已经注册,请登录");
         }

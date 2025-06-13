@@ -1,6 +1,7 @@
 package com.qishanor.common.security;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.apachecommons.CommonsLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -8,21 +9,23 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Slf4j
-//@Configuration
 public class SaTokenConfigure implements WebMvcConfigurer {
 
     public SaTokenConfigure() {
         log.info("SaTokenConfigure 已初始化"); // 添加日志
     }
 
-    // 注册Sa-Token的注解拦截器，打开注解式鉴权功能
+    // 注册拦截器 拦截所有请求，如果是api接口可以在方法上增加@SaIgnore 已经排除静态资源
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 注册注解拦截器
-        registry.addInterceptor(new SaInterceptor())
+        // 注册 Sa-Token 拦截器，校验规则为 StpUtil.checkLogin() 登录校验。
+        registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
                 .addPathPatterns("/**")
-                .order(1);// 拦截所有请求
-
-        log.info("Sa-Token 拦截器已注册"); // 添加日志确认
+                .excludePathPatterns(
+                        "/static/**",
+                        "/public/**",
+                        "/resources/**",
+                        "/favicon.ico"
+                );
     }
 }

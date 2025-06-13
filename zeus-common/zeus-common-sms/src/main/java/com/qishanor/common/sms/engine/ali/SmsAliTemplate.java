@@ -44,6 +44,11 @@ public class SmsAliTemplate implements SmsTemplate {
     }
 
     @Override
+    public SmsResult send(String phoneNumber, String templateCode, Map<String, String> templateParam) {
+        return send(null,phoneNumber,templateCode,templateParam);
+    }
+
+    @Override
     public SmsResult send(String signName, String phoneNumber,String templateCode, Map<String, String> templateParam) {
 
         if(StrUtil.isBlank(signName)){

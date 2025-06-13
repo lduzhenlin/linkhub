@@ -1,6 +1,7 @@
 package com.qishanor.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,7 @@ public class TokenController {
         return "退出登录";
     }
 
-    @SaCheckLogin
+    @SaCheckRole("super-admin")
     @RequestMapping("/info")
     public Object getUserInfo(){
         return StpUtil.getTokenInfo();

@@ -9,7 +9,9 @@ spring:
   freemarker:
     charset: utf-8
     suffix: .ftl
-
+  web:
+    resources:
+      static-locations: classpath:/static/
 
 mybatis-plus:
   configuration:

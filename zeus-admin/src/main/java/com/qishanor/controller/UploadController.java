@@ -24,7 +24,6 @@ public class UploadController {
     private final FileTemplate fileTemplate;
 
 
-
     @RequestMapping("/api/upload")
     private R upload(@RequestParam("files[]") MultipartFile[] files) throws Exception {
         List<String> uploadedFiles = new ArrayList<>();
@@ -41,7 +40,6 @@ public class UploadController {
 
         S3Object obj=fileTemplate.getObject("image",uploadedFiles.get(0));
         Console.log(obj);
-//        validateS3ObjectContent(obj);
 
         List<S3ObjectSummary> objList=fileTemplate.getObjectsByPrefix("image","test",true);
         for (S3ObjectSummary s3ObjectSummary : objList) {

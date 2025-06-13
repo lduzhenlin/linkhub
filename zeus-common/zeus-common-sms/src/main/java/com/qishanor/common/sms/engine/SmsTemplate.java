@@ -6,6 +6,7 @@ import java.util.Map;
 
 public interface SmsTemplate {
 
+    SmsResult send(String phoneNumber,String templateCode, Map<String, String> templateParam);
 
     SmsResult send(String signName, String phoneNumber,String templateCode, Map<String, String> templateParam);
 
