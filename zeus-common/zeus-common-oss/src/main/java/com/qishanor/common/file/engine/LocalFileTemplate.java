@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,17 +67,17 @@ public class LocalFileTemplate implements FileTemplate {
 	 * @param file
 	 */
 	@Override
-	public String putObject(MultipartFile file) throws IOException {
-		return putObject(null,null,file);
+	public String uploadFile(MultipartFile file) throws IOException {
+		return uploadFile(null,null,file);
 	}
 	@Override
-	public String putObject(String dir, MultipartFile file) throws IOException {
-		return putObject(dir,null,file);
+	public String uploadFile(String dir, MultipartFile file) throws IOException {
+		return uploadFile(dir,null,file);
 	}
 
 	@Override
-	public String putObject(MultipartFile file, String objectName) throws IOException {
-		return putObject(null,objectName,file);
+	public String uploadFile(MultipartFile file, String objectName) throws IOException {
+		return uploadFile(null,objectName,file);
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class LocalFileTemplate implements FileTemplate {
 	 * @param file
 	 */
 	@Override
-	public String putObject(String dir, String objectName, MultipartFile file) throws IOException {
+	public String uploadFile(String dir, String objectName, MultipartFile file) throws IOException {
 
 		String bucketName=fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
@@ -107,18 +106,17 @@ public class LocalFileTemplate implements FileTemplate {
 
 		//写入文件
 		File destFile = FileUtil.file(path + FileUtil.FILE_SEPARATOR + objectName);
-		//这个是保存在项目所在磁盘下
-//		FileUtil.writeFromStream(file.getInputStream(), destFile);
-		//这种方式是保存在当前项目下
-		Files.copy(file.getInputStream(), destFile.toPath());
+		//如果path是绝对路径（如D:/uploads），文件会保存在指定磁盘目录下。
+		//如果path是相对路径（如uploads），文件会保存在项目的工作目录下（通常是项目根目录或 IDE 运行目录）。
+		FileUtil.writeFromStream(file.getInputStream(), destFile);
 		return objectName;
 	}
 
 
 	@Override
 	@SneakyThrows
-	public S3Object getObject(String objectName) {
-		return getObject(null,objectName);
+	public S3Object getFile(String objectName) {
+		return getFile(null,objectName);
 	}
 
 	/**
@@ -128,7 +126,7 @@ public class LocalFileTemplate implements FileTemplate {
 	 * @return 二进制流
 	 */
 	@Override
-	public S3Object getObject(String dir, String objectName) {
+	public S3Object getFile(String dir, String objectName) {
 		String bucketName= fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			bucketName = bucketName + FileUtil.FILE_SEPARATOR + dir;
@@ -143,8 +141,8 @@ public class LocalFileTemplate implements FileTemplate {
 
 
 	@Override
-	public void removeObject(String objectName){
-		removeObject(null,objectName);
+	public void removeFile(String objectName){
+		removeFile(null,objectName);
 	}
 
 	/**
@@ -153,7 +151,7 @@ public class LocalFileTemplate implements FileTemplate {
 	 * @param objectName 文件名
 	 */
 	@Override
-	public void removeObject(String dir, String objectName){
+	public void removeFile(String dir, String objectName){
 		String bucketName= fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			bucketName = bucketName + FileUtil.FILE_SEPARATOR + dir;
@@ -165,8 +163,8 @@ public class LocalFileTemplate implements FileTemplate {
 
 
 	@Override
-	public List<S3ObjectSummary> getObjectsByPrefix(String prefix, boolean recursive) {
-		return getObjectsByPrefix(null,prefix,recursive);
+	public List<S3ObjectSummary> getFileByPrefix(String prefix, boolean recursive) {
+		return getFileByPrefix(null,prefix,recursive);
 	}
 	/**
 	 * 根据文件前置查询文件
@@ -178,7 +176,7 @@ public class LocalFileTemplate implements FileTemplate {
 	 * S3ObjectSummary包含元数据摘要信息，包含对象的基本信息（如键、大小、修改时间等），但不包含对象的实际内容。
 	 */
 	@Override
-	public List<S3ObjectSummary> getObjectsByPrefix(String dir, String prefix, boolean recursive) {
+	public List<S3ObjectSummary> getFileByPrefix(String dir, String prefix, boolean recursive) {
 		String path = fileConfig.getBasePath() + FileUtil.FILE_SEPARATOR + fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			path = path + FileUtil.FILE_SEPARATOR + dir;

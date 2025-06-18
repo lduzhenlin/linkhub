@@ -1,19 +1,3 @@
-/*
- *    Copyright (c) 2018-2025, zeus All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * Neither the name of the pig4cloud.com developer nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- * Author: zeus
- */
 
 package com.qishanor.common.file.engine;
 
@@ -85,19 +69,19 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 
 	@Override
-	public String putObject(MultipartFile file) throws IOException{
-		return putObject(null,null,file);
+	public String uploadFile(MultipartFile file) throws IOException{
+		return uploadFile(null,null,file);
 	}
 	@Override
-	public String putObject(String dir, MultipartFile file) throws IOException{
-		return putObject(dir,null,file);
+	public String uploadFile(String dir, MultipartFile file) throws IOException{
+		return uploadFile(dir,null,file);
 	}
 	@Override
-	public String putObject(MultipartFile file,String objectName) throws IOException {
-		return putObject(null,objectName,file);
+	public String uploadFile(MultipartFile file, String objectName) throws IOException {
+		return uploadFile(null,objectName,file);
 	}
 	@Override
-	public String putObject(String dir, String objectName, MultipartFile file) throws IOException {
+	public String uploadFile(String dir, String objectName, MultipartFile file) throws IOException {
 
 		String resultFileName="";
 		if(StrUtil.isBlank(objectName)){
@@ -121,8 +105,8 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 
 	@Override
-	public S3Object getObject( String objectName){
-		return getObject(null,objectName);
+	public S3Object getFile(String objectName){
+		return getFile(null,objectName);
 	}
 	/**
 	 * 获取文件
@@ -131,21 +115,17 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 	 * @return 二进制流
 	 */
 	@Override
-	public S3Object getObject(String dir, String objectName){
+	public S3Object getFile(String dir, String objectName){
 		if (StrUtil.isNotBlank(dir)) {
 			objectName = dir + CharPool.SLASH + objectName;
 		}
-//		return getObject(fileConfig.getBucketName(), objectName);
-//		if (properties.getOss().isSkipMd5Check()) {
-//			System.setProperty("com.amazonaws.services.s3.disableGetObjectMD5Validation", "false");
-//		}
 		return amazonS3.getObject(fileConfig.getBucketName(), objectName);
 	}
 
 
 	@Override
-	public void removeObject(String objectName) {
-		removeObject(null,objectName);
+	public void removeFile(String objectName) {
+		removeFile(null,objectName);
 	}
 	/**
 	 * 删除文件
@@ -153,7 +133,7 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 	 * @param objectName 文件名称
 	 */
 	@Override
-	public void removeObject(String dir, String objectName){
+	public void removeFile(String dir, String objectName){
 		if (StrUtil.isNotBlank(dir)) {
 			// dir 路径为 a/b
 			objectName = dir + CharPool.SLASH  + objectName;
@@ -168,9 +148,9 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 
 	@SneakyThrows
-	public List<S3ObjectSummary> getObjectsByPrefix(String prefix, boolean recursive) {
+	public List<S3ObjectSummary> getFileByPrefix(String prefix, boolean recursive) {
 
-		return getObjectsByPrefix(null,prefix,recursive);
+		return getFileByPrefix(null,prefix,recursive);
 	}
 
 	/**
@@ -181,7 +161,7 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 	 * @return S3ObjectSummary 列表
 	 */
 	@SneakyThrows
-	public List<S3ObjectSummary> getObjectsByPrefix(String dir, String prefix, boolean recursive) {
+	public List<S3ObjectSummary> getFileByPrefix(String dir, String prefix, boolean recursive) {
 		if (StrUtil.isNotBlank(dir)) {
 			// dir 路径为 a/b
 			prefix = dir + CharPool.SLASH  + prefix;

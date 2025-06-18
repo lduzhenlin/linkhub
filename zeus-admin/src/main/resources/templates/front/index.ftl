@@ -163,7 +163,7 @@
 
   <!-- 悬浮按钮 - 在移动端调整位置 -->
   <div id="floatBtn" class="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 flex flex-col space-y-3 hidden">
-    <button onclick="openLinkEditModal(null)" class="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="添加书签">
+    <button onclick="openLinkSaveModal(null)" class="w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="添加书签">
       <i class="fas fa-plus"></i>
     </button>
     <button onclick="openSaveCategoryModal()" class="w-12 h-12 bg-purple-500 hover:bg-purple-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors" title="分类管理">
@@ -322,6 +322,52 @@
     </div>
   </div>
 
+  <div id="saveLinkModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-card-theme rounded-lg w-[480px] relative">
+      <div class="p-4 border-b border-theme flex justify-between items-center">
+        <h2 class="text-base font-medium text-theme">保存书签</h2>
+        <button onclick="closeLinkSaveModal()" class="text-theme-secondary hover:text-theme transition-colors">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="saveLinkForm" class="p-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-theme mb-1">名称</label>
+            <input type="text" id="saveLinkTitle" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入书签名称">
+          </div>
+          <div>
+            <label class="block text-sm text-theme mb-1">链接</label>
+            <input type="url" id="saveLinkUrl" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入链接地址">
+          </div>
+          <div>
+            <label class="block text-sm text-theme mb-1">描述</label>
+            <textarea id="saveLinkDescription" rows="3" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors resize-none" placeholder="请输入书签描述"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm text-theme mb-1">分类</label>
+            <select id="saveLinkCategoryId" class="linkCategoryId w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors appearance-none"></select>
+          </div>
+          <div>
+            <label class="block text-sm text-theme mb-1">图标</label>
+            <div class="flex items-center space-x-2">
+              <div  class="w-8 h-8 bg-theme rounded flex items-center justify-center">
+                <img id="saveLinkPreviewIcon" src="" alt="" class="w-4 h-4">
+              </div>
+              <div class="flex-1">
+                <input type="text" id="saveLinkIconUrl"  class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors " placeholder="请输入图标地址">
+              </div>
+              <button type="button" onclick="getFavicon('saveLink')" class="px-4 py-2 bg-theme text-sm text-theme-secondary hover:text-theme rounded border border-theme transition-colors">获取图标</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="p-4 border-t border-theme flex justify-end space-x-2">
+        <button type="button" onclick="closeLinkSaveModal()" class="px-6 py-2 text-sm bg-theme hover:bg-opacity-80 text-theme-secondary rounded transition-colors">取消</button>
+        <button type="button" onclick="saveLink()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition-colors">保存</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 编辑弹框 -->
   <div id="editLinkModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
@@ -332,7 +378,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <form id="editForm" class="p-6">
+      <form id="editLinkForm" class="p-6">
         <div class="space-y-4">
           <input type="hidden" id="editLinkId"></input>
           <div>
@@ -349,25 +395,25 @@
           </div>
           <div>
             <label class="block text-sm text-theme mb-1">分类</label>
-            <select id="editLinkCategoryId" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors appearance-none"></select>
+            <select id="editLinkCategoryId" class="linkCategoryId w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors appearance-none"></select>
           </div>
           <div>
             <label class="block text-sm text-theme mb-1">图标</label>
             <div class="flex items-center space-x-2">
-              <div id="editLinkIconPreview" class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                <img id="previewLinkIcon" src="" alt="" class="w-4 h-4">
+              <div  class="w-8 h-8 bg-theme rounded flex items-center justify-center">
+                <img id="editLinkPreviewIcon" src="" alt="" class="w-4 h-4">
               </div>
               <div class="flex-1">
-                <input type="text" id="editLinkIcon" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入图标地址">
+                <input type="text" id="editLinkIconUrl"  class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors " placeholder="请输入图标地址">
               </div>
-              <button type="button" class="px-4 py-2 bg-theme text-sm text-theme-secondary hover:text-theme rounded border border-theme transition-colors">上传</button>
+              <button type="button" onclick="getFavicon('editLink')" class="px-4 py-2 bg-theme text-sm text-theme-secondary hover:text-theme rounded border border-theme transition-colors">获取图标</button>
             </div>
           </div>
         </div>
       </form>
       <div class="p-4 border-t border-theme flex justify-end space-x-2">
         <button type="button" onclick="closeLinkEditModal()" class="px-6 py-2 text-sm bg-theme hover:bg-opacity-80 text-theme-secondary rounded transition-colors">取消</button>
-        <button type="button" onclick="saveLink()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition-colors">保存</button>
+        <button type="button" onclick="editLink()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition-colors">保存</button>
       </div>
     </div>
   </div>
@@ -819,95 +865,50 @@
 
     // 链接相关JS
 
-    //监听url变化
-    $('#editLinkUrl').on('input blur', function() {
-      const editLinkUrl = $(this).val();
-      if (editLinkUrl) {
-        const iconUrl=getFavicon(editLinkUrl)
-        $('#editLinkIcon').val(iconUrl);
-
-        //预览图标
-        $("#previewLinkIcon").attr("src",iconUrl)
-
-        // if (iconUrl&&$('#editLinkIconPreview').find("img").length==0) {
-          // $('#editLinkIconPreview').append('<img  src="' + iconUrl + '" alt="" class="w-4 h-4">')
-          <#--$('#editLinkIconPreview').append(`<img  src="${r'${iconUrl}'}" alt="" class="w-4 h-4">`)-->
-        // }
-
-
-      }
-    });
-
     //根据域名获取icon图标地址
-    function getFavicon(url) {
-      let domain = url;
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        domain = new URL(url).hostname;
+    function getFavicon(target) {
+      let linkUrl = $("#"+target+"Url").val();
+      if(!linkUrl)return;
+      if (linkUrl.startsWith('http://') || linkUrl.startsWith('https://')) {
+        linkUrl = new URL(linkUrl).hostname;
       }
+
       //待确定
       //ttps://xxapi.cn/doc/ico
       //https://www.favicon.vip/
-      return `https://icon.bqb.cool?url=${r'${domain}'}`;
+      let iconUrl= `https://icon.bqb.cool?url=${r'${linkUrl}'}`;
+
+      $("#"+target+"IconUrl").val(iconUrl);
+      //预览图标
+      $("#"+target+"PreviewIcon").attr("src",iconUrl)
     }
 
-    // 打开编辑弹框
-    function openLinkEditModal(linkId) {
-
+    // 打开保存书签弹框
+    function openLinkSaveModal(linkId) {
       // 重置表单
-      $('#editLinkId').val('');
-      $('#editLinkTitle').val('');
-      $('#editLinkDescription').val('');
-      $('#editLinkIcon').val('');
-      $('#editLinkUrl').val('');
-      $('#editLinkCategoryId').val('');
-      $('#previewLinkIcon').attr("src","");
+      $('#saveLinkId').val('');
+      $('#saveLinkTitle').val('');
+      $('#saveLinkDescription').val('');
+      $('#saveLinkIconUrl').val('');
+      $('#saveLinkUrl').val('');
+      $('#saveLinkCategoryId').val('');
+      $('#saveLinkPreviewIcon').attr("src","");
 
-      
-      if (linkId) {
-        //编辑
-        $.ajax({
-          url:BASE_API+"/link/getById",
-          method:"get",
-          dataType:"json",
-          headers:{'TENANT-ID':localStorage.getItem("tenantId")},
-          data:{linkId:linkId},
-          success:function(res){
-            if(res.code==0){
-              $('#editLinkId').val(res.data.linkId);
-              $('#editLinkTitle').val(res.data.title);
-              $('#editLinkUrl').val(res.data.url);
-              $('#editLinkDescription').val(res.data.description);
-              $('#editLinkCategoryId').val(res.data.categoryId);
-              $('#editLinkIcon').val(res.data.icon);
-              // 手动触发事件
-              $('#editLinkUrl').trigger('input');
-
-              // if (res.core.icon) {
-              //   $('#previewLinkIcon').attr('src', res.core.icon).show();
-              // }
-            }else{
-              toastr.error(res.msg)
-            }
-          }
-        })
-      }
       //新增
-      $('#editLinkModal').removeClass('hidden').addClass('flex');
+      $('#saveLinkModal').removeClass('hidden').addClass('flex');
     }
 
-    // 关闭编辑弹框
-    function closeLinkEditModal() {
-      $('#editLinkModal').removeClass('flex').addClass('hidden');
+    // 关闭保存书签弹框
+    function closeLinkSaveModal() {
+      $('#saveLinkModal').removeClass('flex').addClass('hidden');
     }
 
-    // 保存编辑
     function saveLink() {
-      const linkId = $('#editLinkId').val().trim();
-      const title = $('#editLinkTitle').val().trim();
-      const url = $('#editLinkUrl').val().trim();
-      const description = $('#editLinkDescription').val().trim();
-      const categoryId = $('#editLinkCategoryId').val();
-      const icon = $('#editLinkIcon').val().trim();
+      const title = $('#saveLinkTitle').val().trim();
+      const url = $('#saveLinkUrl').val().trim();
+      const description = $('#saveLinkDescription').val().trim();
+      const categoryId = $('#saveLinkCategoryId').val();
+      const iconUrl = $('#saveLinkIconUrl').val().trim();
 
       if (!title) {
         alert('请输入书签名称');
@@ -922,12 +923,14 @@
         alert('请选择所属分类');
         return;
       }
+
+
       $.ajax({
-        url:BASE_API+"/link",
+        url:"/api/link",
         method:"post",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
-        data:{linkId:linkId,title:title,url:url,description:description,icon:icon,categoryId:categoryId},
+        data:{title:title,url:url,description:description,iconUrl:iconUrl,categoryId:categoryId},
         success:function(res){
           if(res.code==0){
             toastr.success("保存成功")
@@ -938,7 +941,94 @@
         }
       })
 
-      closeLinkEditModal();
+      closeLinkSaveModal();
+    }
+
+    // 打开编辑书签弹框
+    function openLinkEditModal(linkId) {
+
+      // 重置表单
+      $('#editLinkId').val('');
+      $('#editLinkTitle').val('');
+      $('#editLinkDescription').val('');
+      $('#editLinkUrl').val('');
+      $('#editLinkCategoryId').val('');
+      $('#editLinkIconUrl').val('');
+      $('#editLinkPreviewIcon').attr("src","");
+
+      //编辑
+      $.ajax({
+        url:"/api/link/getById",
+        method:"get",
+        dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        data:{linkId:linkId},
+        success:function(res){
+          if(res.code==0){
+            $('#editLinkId').val(res.data.linkId);
+            $('#editLinkTitle').val(res.data.title);
+            $('#editLinkUrl').val(res.data.url);
+            $('#editLinkDescription').val(res.data.description);
+            $('#editLinkCategoryId').val(res.data.categoryId);
+            $('#editLinkIconUrl').val(res.data.iconUrl);
+            $('#editLinkPreviewIcon').attr('src',res.data.iconUrl).show();
+
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+
+      //新增
+      $('#editLinkModal').removeClass('hidden').addClass('flex');
+    }
+
+    // 关闭编辑书签弹框
+    function closeLinkEditModal() {
+      $('#editLinkModal').removeClass('flex').addClass('hidden');
+    }
+
+    // 保存编辑
+    function editLink() {
+      const linkId = $('#editLinkId').val().trim();
+      const title = $('#editLinkTitle').val().trim();
+      const url = $('#editLinkUrl').val().trim();
+      const description = $('#editLinkDescription').val().trim();
+      const categoryId = $('#editLinkCategoryId').val();
+      const iconUrl = $('#editLinkIconUrl').val().trim();
+
+      if (!title) {
+        alert('请输入书签名称');
+        return;
+      }
+
+      if (!url) {
+        alert('请输入链接地址');
+        return;
+      }
+      if (!categoryId) {
+        alert('请选择所属分类');
+        return;
+      }
+
+      $.ajax({
+        url:"/api/link",
+        method:"put",
+        dataType:"json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        data:{linkId:linkId,title:title,url:url,description:description,iconUrl:iconUrl,categoryId:categoryId},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("保存成功")
+            loadCategories()
+            closeLinkEditModal();
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+
+
     }
 
     // 打开删除确认弹框
@@ -994,7 +1084,7 @@
                    <div class="flex items-start justify-between mb-2">
                        <div class="flex items-center space-x-2">
                          <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                           <img  src="${r'${link.icon}'}" class="w-6 h-6">
+                           <img  src="${r'${link.iconUrl}'}" class="w-6 h-6">
                          </div>
                          <a href="javascript:void(0)"  onclick="openLink('${r'${link.url}'}')"><h3  class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3></a>
                        </div>
@@ -1145,10 +1235,7 @@
         }
       })
 
-
     }
-
-
 
 
     // 修改 loadCategories 函数中的分类项模板
@@ -1199,7 +1286,7 @@
       });
 
       //生成书签选择目录列表
-      const selectCategoryList = $("#editLinkCategoryId");
+      const selectCategoryList = $(".linkCategoryId");
       selectCategoryList.empty();
       categories.forEach(category => {
         selectCategoryList.append(`

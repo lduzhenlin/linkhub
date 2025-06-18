@@ -22,6 +22,7 @@ public class Link extends Model<Link> {
     private String icon;
     private String categoryId;
 
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT)
@@ -38,5 +39,9 @@ public class Link extends Model<Link> {
     @TableField(fill = FieldFill.INSERT)
     private String delFlag;
     private Long tenantId;
+
+
+    @TableField(exist = false)
+    private String iconUrl;
 
 }

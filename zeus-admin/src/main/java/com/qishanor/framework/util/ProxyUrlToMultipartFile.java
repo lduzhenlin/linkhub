@@ -2,6 +2,8 @@ package com.qishanor.framework.util;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -11,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import cn.hutool.core.io.IoUtil;
@@ -57,68 +60,43 @@ public class ProxyUrlToMultipartFile {
             }
         } else {
             // 直接是图片数据
-            return createMultipartFile(response, proxyUrl);
+            return createMultipartFile(response);
         }
     }
 
     /**
      * 创建MultipartFile对象
      */
-    private static MultipartFile createMultipartFile(HttpResponse response, String originalUrl) throws IOException {
+    private static MultipartFile createMultipartFile(HttpResponse response) throws IOException {
         // 获取图片数据
         byte[] imageBytes = response.bodyBytes();
 
-        // 从原始URL中提取文件名（如果有）
-        String fileName = extractFileName(originalUrl);
+        //文件名
+        String filename="";
 
         // 获取或检测Content-Type
         String contentType = response.header("Content-Type");
         if (contentType == null || contentType.startsWith("application/octet-stream")) {
             contentType = detectContentType(imageBytes);
+        }else{
+            //获取文件类型后缀 生成文件名
+            List<String> lists=StrUtil.split(contentType,"/");
+            if(lists.size()>=2){
+                filename= IdUtil.getSnowflakeNextIdStr()+"."+lists.get(1);
+            }
         }
 
         // 创建MultipartFile
         return new MockMultipartFile(
                 "file",
-                fileName,
+                filename,
                 contentType,
                 new ByteArrayInputStream(imageBytes)
         );
     }
 
-    /**
-     * 从URL中提取文件名
-     */
-    private static String extractFileName(String url) {
-        if (url == null) {
-            return "image" + getRandomSuffix();
-        }
 
-        try {
-            UrlBuilder urlBuilder = UrlBuilder.of(url);
-            String path = String.valueOf(urlBuilder.getPath());
 
-            if (path != null && !path.isEmpty()) {
-                String[] parts = path.split("/");
-                String fileName = parts[parts.length - 1];
-
-                // 检查是否有扩展名
-                if (fileName.contains(".")) {
-                    return fileName;
-                } else {
-                    return fileName + getRandomSuffix();
-                }
-            }
-        } catch (Exception e) {
-            // 解析失败时返回随机文件名
-        }
-
-        return "image" + getRandomSuffix();
-    }
-
-    // 其余方法（extractImageUrl, getRandomSuffix, detectContentType）保持不变...
-
-    /**
      /**
      * 从响应内容中提取图片URL
      */
@@ -144,14 +122,6 @@ public class ProxyUrlToMultipartFile {
         return null;
     }
 
-    /**
-     * 获取随机文件后缀
-     */
-    private static String getRandomSuffix() {
-        String[] suffixes = {".jpg", ".png", ".gif", ".webp"};
-        int index = (int) (Math.random() * suffixes.length);
-        return suffixes[index];
-    }
 
     /**
      * 检测文件内容类型

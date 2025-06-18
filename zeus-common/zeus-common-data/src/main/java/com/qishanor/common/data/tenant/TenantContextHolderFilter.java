@@ -4,6 +4,7 @@ package com.qishanor.common.data.tenant;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.qishanor.common.core.constant.CacheConstant;
 import com.qishanor.common.core.constant.CommonConstant;
@@ -83,10 +84,15 @@ public class TenantContextHolderFilter extends GenericFilterBean  {
      * @return boolean
      */
     private boolean isValidTenantStatus(HttpServletRequest request, HttpServletResponse response) {
-        Console.log(request.getRequestURI());
-        if("/".equals(request.getRequestURI())){return true;}
+//        Console.log(request.getRequestURI());
+//        if("/".equals(request.getRequestURI())){return true;}
         // 如果是获取租户列表请求跳过检查
-        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/user/register","/user/login","/user/isLogin")) {
+//        if (StrUtil.containsAnyIgnoreCase(request.getRequestURI(), "/user/register","/user/login","/user/isLogin","/file/*")) {
+//            return true;
+//        }
+
+        //如果是租户ID不为空，则进行下面操作租户ID的验证
+        if(ObjUtil.isEmpty(TenantContextHolder.getTenantId())){
             return true;
         }
 

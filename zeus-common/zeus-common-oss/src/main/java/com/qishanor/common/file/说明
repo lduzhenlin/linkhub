@@ -12,6 +12,9 @@ YamlConfigRepository yml文件配置信息加载类, 配置文件中enable=false
 DbConfigRepository   数据库配置信息加载类  数据表为：sys_file_config
 
 
+//如果basePath是绝对路径（如D:/uploads），文件会保存在指定磁盘目录下。
+//如果basePath是相对路径（如uploads），文件会保存在项目的工作目录下（通常是项目根目录或 IDE 运行目录）。
+
 yaml 文件中配置案例
 
 file:

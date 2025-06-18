@@ -16,7 +16,6 @@ import java.util.List;
 public interface FileTemplate  {
 
 
-
 	FileConfig getFileConfig();
 
 	/**
@@ -31,40 +30,42 @@ public interface FileTemplate  {
 
 	/**
 	 * 上传文件
+	 * 返回文件名
 	 */
-	String putObject(MultipartFile file) throws IOException;
+	String uploadFile(MultipartFile file) throws IOException;
 
-	String putObject(String dir, MultipartFile file) throws IOException;
+	String uploadFile(String dir, MultipartFile file) throws IOException;
 
-	String putObject(MultipartFile file,String objectName) throws IOException;
+	String uploadFile(MultipartFile file, String objectName) throws IOException;
 
-	String putObject(String dir, String objectName, MultipartFile file) throws IOException;
-
-
+	String uploadFile(String dir, String objectName, MultipartFile file) throws IOException;
 
 
-	S3Object getObject( String objectName);
+
+	/**
+	 * 获取文件
+	 * @param objectName 文件名称
+	 * @return 二进制流
+	 */
+	S3Object getFile(String objectName);
 	/**
 	 * 获取文件
 	 * @param dir 文件夹名称
 	 * @param objectName 文件名称
 	 * @return 二进制流 s3Object.getObjectContent()文件输入流内容
 	 */
-	S3Object getObject(String dir, String objectName);
+	S3Object getFile(String dir, String objectName);
 
 
 
+	void removeFile(String objectName) ;
 
-	void removeObject(String objectName) ;
-
-	void removeObject(String dir, String objectName) ;
-
+	void removeFile(String dir, String objectName) ;
 
 
+	List<S3ObjectSummary> getFileByPrefix(String prefix, boolean recursive);
 
-	List<S3ObjectSummary> getObjectsByPrefix(String prefix, boolean recursive);
-
-	List<S3ObjectSummary> getObjectsByPrefix(String dir, String prefix, boolean recursive);
+	List<S3ObjectSummary> getFileByPrefix(String dir, String prefix, boolean recursive);
 
 
 

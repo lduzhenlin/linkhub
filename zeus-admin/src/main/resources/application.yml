@@ -36,5 +36,5 @@ file:
   storage:
     enable: true
     type: local
-    bucketName:
+    bucketName: images
     basePath: /upload
