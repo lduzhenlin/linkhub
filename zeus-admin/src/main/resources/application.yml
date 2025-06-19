@@ -32,9 +32,3 @@ sa-token:
   # 是否输出操作日志
   is-log: false
 
-file:
-  storage:
-    enable: true
-    type: local
-    bucketName: images
-    basePath: /upload

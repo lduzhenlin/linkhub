@@ -19,6 +19,7 @@ public class SmsResult {
     private String templateCode;
     private String templateParam;
 
+
     /**
      * 发送是否成功
      */

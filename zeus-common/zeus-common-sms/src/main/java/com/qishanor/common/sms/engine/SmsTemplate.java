@@ -6,9 +6,9 @@ import java.util.Map;
 
 public interface SmsTemplate {
 
-    SmsResult send(String phoneNumber,String templateCode, Map<String, String> templateParam);
+    SmsResult send(String phoneNumber,String templateCode, Map<String, Object> templateParam);
 
-    SmsResult send(String signName, String phoneNumber,String templateCode, Map<String, String> templateParam);
+    SmsResult send(String signName, String phoneNumber,String templateCode, Map<String, Object> templateParam);
 
 //    CompletableFuture<SmsResult> sendAsync(String phoneNumbers, String templateId, Map<String, String> templateParams);
 

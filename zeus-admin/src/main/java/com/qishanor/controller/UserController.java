@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qishanor.Service.SysUserService;
 import com.qishanor.common.core.constant.CacheConstant;
 import com.qishanor.common.core.util.R;
+import com.qishanor.framework.util.VerifyCodeCacheUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,5 +73,28 @@ public class UserController {
     @GetMapping("/isLogin")
     public Object isLogin(){
         return R.ok(StpUtil.isLogin());
+    }
+
+    /**
+     * 找回密码
+     */
+    @SaIgnore
+    @PostMapping("/findPassword")
+    public Object   findPassword(String phone,String code,String newPassword ){
+        if(StrUtil.isBlank(phone)||StrUtil.isBlank(code)||StrUtil.isBlank(newPassword)){
+            return R.failed("输入信息不完整");
+        }
+
+        //验证验证码
+        if(!VerifyCodeCacheUtil.isValidCode(phone,code)){
+            return R.failed("验证码错误");
+        }
+
+        //设置新密码
+        SysUser dbUser=sysUserService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getTel,phone));
+        dbUser.setPassword(BCrypt.hashpw(newPassword));
+        sysUserService.updateById(dbUser);
+
+        return R.ok();
     }
 }

@@ -255,9 +255,10 @@
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
               <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
-              <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
-                <i class="fas fa-eye"></i>
-              </button>
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </input>
             </div>
           </div>
           <div>
@@ -267,9 +268,10 @@
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
               <input type="password" id="password1" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请再次输入密码">
-              <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
-                <i class="fas fa-eye"></i>
-              </button>
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </input>
             </div>
           </div>
           <div class="flex items-start space-x-2">
@@ -305,14 +307,17 @@
           </div>
           <div>
             <label class="block text-sm text-theme-secondary mb-2">验证码</label>
-            <div class="flex space-x-2">
+            <div class="flex items-center space-x-2">
               <input type="text" id="forgotCode" class="flex-1 px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入验证码">
-              <button type="button" onclick="sendForgotCode()" class="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition-colors">获取验证码</button>
+              <button type="button" id="sendForgotCodeBtn" onclick="sendForgotCode()" class="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition-colors">发送验证码</button>
             </div>
           </div>
-          <div>
+          <div class="relative">
             <label class="block text-sm text-theme-secondary mb-2">新密码</label>
-            <input type="password" id="forgotNewPassword" class="w-full px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入新密码">
+            <input type="password" id="forgotNewPassword"class="w-full px-3 py-2 h-10 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入新密码">
+            <button type="button" class="absolute right-0 pr-3  h-10 text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
+              <i class="fas fa-eye"></i>
+            </button>
           </div>
           <button type="button" onclick="handleForgotPassword()" class="w-full py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-md transition-colors">
             重置密码
@@ -679,7 +684,6 @@
     function togglePassword(button) {
       const input = $(button).siblings('input');
       const icon = $(button).find('i');
-
       if (input.attr('type') === 'password') {
         input.attr('type', 'text');
         icon.removeClass('fa-eye').addClass('fa-eye-slash');
@@ -838,14 +842,47 @@
       $('#forgotPasswordForm')[0].reset();
     }
 
+    // 验证码倒计时功能
+    let forgotCodeTimer = null;
+    let forgotCodeCountdown = 60;
     function sendForgotCode() {
       const phone = $('#forgotPhone').val().trim();
+      console.log(phone)
       if (!phone) {
         alert('请输入手机号');
         return;
       }
+      // 禁用按钮并开始倒计时
+      $('#sendForgotCodeBtn').prop('disabled', true).text(`已发送(${r'${forgotCodeCountdown}'}s)`);
+      forgotCodeTimer = setInterval(() => {
+        forgotCodeCountdown--;
+        if (forgotCodeCountdown > 0) {
+          $('#sendForgotCodeBtn').text(`已发送(${r'${forgotCodeCountdown}'}s)`);
+        } else {
+          clearInterval(forgotCodeTimer);
+          $('#sendForgotCodeBtn').prop('disabled', false).text('发送验证码');
+          forgotCodeCountdown = 60;
+        }
+      }, 1000);
+
       // 这里添加发送验证码的后端交互逻辑
-      alert('验证码已发送到 ' + phone);
+      $.ajax({
+        url:"/api/sms/forgotPassword",
+        method:"get",
+        dataType:"json",
+        data:{phone:phone},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("验证码发送成功")
+          }else{
+            toastr.error(res.msg)
+            // 如果失败，立即恢复按钮
+            clearInterval(forgotCodeTimer);
+            $('#sendForgotCodeBtn').prop('disabled', false).text('发送验证码');
+            forgotCodeCountdown = 60;
+          }
+        }
+      })
     }
 
     function handleForgotPassword() {
@@ -856,10 +893,24 @@
         alert('请填写完整信息');
         return;
       }
+
       // 这里添加重置密码的后端交互逻辑
-      alert('密码已重置，请使用新密码登录');
-      closeForgotPasswordModal();
-      openLoginModal();
+      $.ajax({
+        url:"/api/user/findPassword",
+        method:"post",
+        dataType:"json",
+        data:{phone:phone,code:code,newPassword:newPassword},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("重置密码成功")
+            closeForgotPasswordModal();
+            openLoginModal();
+          }else{
+            toastr.error(res.msg)
+          }
+        }
+      })
+
     }
 
 
