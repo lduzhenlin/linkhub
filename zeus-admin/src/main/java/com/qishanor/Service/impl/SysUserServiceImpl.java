@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.qishanor.Service.SysUserService;
 import com.qishanor.entity.SysUser;
+import com.qishanor.framework.util.VerifyCodeCacheUtil;
 import com.qishanor.mapper.SysUserMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,9 +23,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public R saveSysUser(SysUser sysUser) {
-        if(StrUtil.isBlank(sysUser.getTel())||StrUtil.isBlank(sysUser.getPassword())){
-            return R.failed("手机号或密码不能为空");
-        }
+
         List<SysUser> dbUsers=baseMapper.selectList(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getTel,sysUser.getTel()).or().eq(SysUser::getUsername,sysUser.getTel()));
         if(CollUtil.size(dbUsers)>0){
             return R.failed("手机号已经注册,请登录");

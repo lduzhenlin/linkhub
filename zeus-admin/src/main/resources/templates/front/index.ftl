@@ -243,9 +243,16 @@
             <label class="block text-sm text-theme-secondary mb-2">手机号</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fas fa-envelope text-theme-secondary"></i>
+                <i class="fas fa-phone text-theme-secondary"></i>
               </div>
               <input type="tel" id="tel" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-theme-secondary mb-2">验证码</label>
+            <div class="flex items-center space-x-2">
+              <input type="text" id="registerCode" class="flex-1 px-3 py-2 bg-theme border border-theme rounded text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入验证码">
+              <button type="button" id="sendRegisterCodeBtn" onclick="sendRegisterCode()" class="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition-colors">发送验证码</button>
             </div>
           </div>
           <div>
@@ -514,7 +521,6 @@
   </div>
 
   <script>
-    let BASE_API="/api"
 
     $(document).ready(function() {
 
@@ -529,7 +535,7 @@
         toggleThemeIcon(savedTheme)
       }else{
         //设置默认主题
-        toggleThemeIcon("dark")
+        toggleThemeIcon("light")
       }
 
       // 切换主题
@@ -652,7 +658,7 @@
     function isLogin(){
       let result=false;
       $.ajax({
-        url:BASE_API+"/user/isLogin",
+        url:"/api/user/isLogin",
         method:"get",
         dataType:"json",
         async: false,
@@ -706,7 +712,7 @@
       // 这里添加登录的后端交互逻辑
       // console.log('登录信息：', { tel, password, remember });
       $.ajax({
-        url:BASE_API+"/user/login",
+        url:"/api/user/login",
         method:"post",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -744,7 +750,7 @@
 
     function handleLogout(){
       $.ajax({
-        url:BASE_API+"/user/logout",
+        url:"/api/user/logout",
         method:"post",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -783,14 +789,56 @@
       $('#registerModal').removeClass('flex').addClass('hidden');
       $('#registerForm')[0].reset();
     }
+    // 验证码倒计时功能
+    let registerCodeTimer = null;
+    let registerCodeCountdown = 60;
+    function sendRegisterCode() {
+      const phone = $('#registerForm input[type="tel"]').val().trim();
+      if (!phone) {
+        alert('请输入手机号');
+        return;
+      }
+      // 禁用按钮并开始倒计时
+      $('#sendRegisterCodeBtn').prop('disabled', true).text(`已发送(${r'${registerCodeCountdown}'}s)`);
+      registerCodeTimer = setInterval(() => {
+        registerCodeCountdown--;
+        if (registerCodeCountdown > 0) {
+          $('#sendRegisterCodeBtn').text(`已发送(${r'${registerCodeCountdown}'}s)`);
+        } else {
+          clearInterval(registerCodeTimer);
+          $('#sendRegisterCodeBtn').prop('disabled', false).text('发送验证码');
+          registerCodeCountdown = 60;
+        }
+      }, 1000);
+
+      // 这里添加发送验证码的后端交互逻辑
+      $.ajax({
+        url:"/api/sms/register",
+        method:"get",
+        dataType:"json",
+        data:{phone:phone},
+        success:function(res){
+          if(res.code==0){
+            toastr.success("验证码发送成功")
+          }else{
+            toastr.error(res.msg)
+            // 如果失败，立即恢复按钮
+            clearInterval(registerCodeTimer);
+            $('#sendRegisterCodeBtn').prop('disabled', false).text('发送验证码');
+            registerCodeCountdown = 60;
+          }
+        }
+      })
+    }
 
     function handleRegister() {
-      const tel = $('#registerForm input[type="tel"]').val();
-      const password = $('#registerForm input[type="password"]').eq(0).val();
-      const confirmPassword = $('#registerForm input[type="password"]').eq(1).val();
+      const tel = $('#registerForm input[type="tel"]').val().trim();
+      const code = $('#registerCode').val().trim();
+      const password = $('#registerForm input[type="password"]').eq(0).val().trim();
+      const confirmPassword = $('#registerForm input[type="password"]').eq(1).val().trim();
       const agreement = $('#registerForm input[type="checkbox"]').is(':checked');
 
-      if (!tel || !password || !confirmPassword) {
+      if (!tel ||!code|| !password || !confirmPassword) {
         alert('请填写完整的注册信息');
         return;
       }
@@ -806,13 +854,12 @@
       }
 
       // 这里添加注册的后端交互逻辑
-      // console.log('注册信息：', { tel, password });
       $.ajax({
-        url:BASE_API+"/user/register",
+        url:"/api/user/register",
         method:"post",
         dataType:"json",//服务器返回结果
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
-        data:{tel:tel,password:password},
+        data:{tel:tel,code:code,password:password},
         success:function (res) {
           if(res.code==0){
             //注册成功
@@ -1099,7 +1146,7 @@
 
       let deleteLinkId= $("#deleteLinkId").text()
       $.ajax({
-        url:BASE_API+"/link",
+        url:"/api/link",
         method:"delete",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -1119,7 +1166,7 @@
     //加载书签数据
     function loadLinks(categoryId,linkTitle=''){
       $.ajax({
-        url:BASE_API+"/link/list",
+        url:"/api/link/list",
         method:"get",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -1191,7 +1238,7 @@
 
       // 这里后端的交互逻辑
       $.ajax({
-        url:BASE_API+"/category",
+        url:"/api/category",
         method:"post",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -1233,7 +1280,7 @@
 
       // 这里应该添加与后端的交互逻辑
       $.ajax({
-        url:BASE_API+"/category",
+        url:"/api/category",
         method:"put",
         dataType:'json',
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -1269,7 +1316,7 @@
 
       // 这里应该添加与后端的交互逻辑
       $.ajax({
-        url:BASE_API+"/category",
+        url:"/api/category",
         method:"delete",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
@@ -1295,7 +1342,7 @@
 
       //加载远程
       $.ajax({
-        url: BASE_API + "/category/list",
+        url: "/api/category/list",
         method: "get",
         dataType: "json",
         data: "json",

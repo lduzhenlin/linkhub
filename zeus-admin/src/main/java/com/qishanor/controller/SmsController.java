@@ -34,6 +34,25 @@ public class SmsController {
     }
 
     @SaIgnore
+    @RequestMapping("/register")
+    public Object sendRegisterSms(String phone){
+
+        // 生成安全的随机4位数字
+        int randomNum = RandomUtil.randomInt(1000,9999);
+        Map<String, Object> paramMap = MapUtil.<String,Object>builder().put("code",randomNum).build();
+
+        SmsResult smsResult=smsTemplate.send(phone, SmsConstant.template_ForgotPassword, paramMap);
+
+
+        if(smsResult.isSuccess()){
+            // 存储到缓存中，键为手机号，值为验证码
+            VerifyCodeCacheUtil.put(phone, String.valueOf(randomNum));
+            return R.ok();
+        }else{
+            return R.failed(smsResult.getReponseMessage());
+        }
+    }
+    @SaIgnore
     @RequestMapping("/forgotPassword")
     public Object sendForgotPasswordSms(String phone){
 

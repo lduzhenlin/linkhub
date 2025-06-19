@@ -54,11 +54,19 @@ public class UserController {
 
     @SaIgnore
     @PostMapping("/register")
-    public Object register(SysUser user) {
+    public Object register(SysUser user,String code) {
+        if(StrUtil.isBlank(user.getTel())||StrUtil.isBlank(code)||StrUtil.isBlank(user.getPassword())){
+            return R.failed("所填数据不完整");
+        }
+        //验证验证码
+        if(!VerifyCodeCacheUtil.isValidCode(user.getTel(),code)){
+            return R.failed("验证码错误");
+        }
+
         return sysUserService.saveSysUser(user);
     }
 
-    @SaIgnore
+
     @PostMapping("/logout")
     public Object logout(String userId){
         if(StrUtil.isBlank(userId)){
