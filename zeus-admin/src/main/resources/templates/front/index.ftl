@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkHub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<#--  <script src="https://cdn.tailwindcss.com"></script>-->
+  <script src="/js/tailwindcss-4.1.10.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <#--  消息弹框-->
@@ -172,7 +172,7 @@
   </div>
 
   <!-- 登录弹框 -->
-  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-90 hidden items-center justify-center z-50">
     <div class="bg-card-theme rounded-lg w-[480px] max-w-[95%] relative">
       <div class="p-8">
         <!-- 标题和关闭按钮 -->
@@ -1367,7 +1367,7 @@
       navList.empty();
       categories.forEach(category => {
         navList.append(`
-          <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap">${r'${category.name}'}</button>
+          <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">${r'${category.name}'}</button>
         `);
       });
 

@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: remote
+    active: prod
   freemarker:
     charset: utf-8
     suffix: .ftl

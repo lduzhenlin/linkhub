@@ -22,10 +22,17 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/static/**",
-                        "/public/**",
-                        "/resources/**",
+                        "/js/**",
+                        "/css/**",
+                        "/image/**",
+                        "/fonts/**",
                         "/favicon.ico"
+//                        "/**/*.js",
+//                        "/**/*.css",
+//                        "/**/*.png",
+//                        "/**/*.jpg",
+//                        "/**/*.jpeg",
+
                 );
     }
 }
