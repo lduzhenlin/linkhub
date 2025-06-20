@@ -22,7 +22,8 @@ file:
     enable: true
     type: local
     bucketName:
-    basePath: /upload1
+    dir:
+    basePath: /upload
 
 
 file:
@@ -31,5 +32,6 @@ file:
     type: oss
     endpoint:
     bucketName:
+    dir:
     accessKey:
     secretKey:

@@ -27,7 +27,7 @@ public class SmsSendPostProcessorImpl implements SmsSendPostProcessor {
 
         SmsSendLog smsSendLog=new SmsSendLog();
         BeanUtil.copyProperties(smsResult,smsSendLog);
-        smsSendLog.setConfigId(IdUtil.getSnowflakeNextId());
+        smsSendLog.setLogId(IdUtil.getSnowflakeNextId());
         smsSendLog.setCreateTime(LocalDateTime.now());
         smsSendLog.setUpdateTime(LocalDateTime.now());
         smsSendLog.setTenantId(TenantContextHolder.getTenantId());

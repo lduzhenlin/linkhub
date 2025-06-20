@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SmsSendLog {
 
-    private Long configId;
+    private Long logId;
 
     private String supplier;
 

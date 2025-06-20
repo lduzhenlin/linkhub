@@ -7,12 +7,12 @@ spring:
     password: 12345678
 
 
-file:
-  storage:
-    enable: true
-    type: local
-    bucketName: images
-    basePath: /upload
+#file:
+#  storage:
+#    enable: true
+#    type: local
+#    bucketName: images
+#    basePath: /upload
 
 
 

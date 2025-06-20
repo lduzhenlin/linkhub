@@ -1,6 +1,7 @@
 
 package com.qishanor.common.file.engine;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharPool;
 import cn.hutool.core.util.StrUtil;
 import com.amazonaws.ClientConfiguration;
@@ -91,6 +92,8 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 		if (StrUtil.isNotBlank(dir)) {
 			objectName = dir + CharPool.SLASH + objectName;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			objectName = fileConfig.getDir() + CharPool.SLASH + objectName;
 		}
 
 		ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -118,7 +121,13 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 	public S3Object getFile(String dir, String objectName){
 		if (StrUtil.isNotBlank(dir)) {
 			objectName = dir + CharPool.SLASH + objectName;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			objectName = fileConfig.getDir() + CharPool.SLASH + objectName;
 		}
+
+//		if (properties.getOss().isSkipMd5Check()) {
+//			System.setProperty("com.amazonaws.services.s3.disableGetObjectMD5Validation", "false");
+//		}
 		return amazonS3.getObject(fileConfig.getBucketName(), objectName);
 	}
 
@@ -137,7 +146,10 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 		if (StrUtil.isNotBlank(dir)) {
 			// dir 路径为 a/b
 			objectName = dir + CharPool.SLASH  + objectName;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			objectName = fileConfig.getDir() + CharPool.SLASH + objectName;
 		}
+
 		amazonS3.deleteObject(fileConfig.getBucketName(), objectName);
 	}
 
@@ -165,6 +177,8 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 		if (StrUtil.isNotBlank(dir)) {
 			// dir 路径为 a/b
 			prefix = dir + CharPool.SLASH  + prefix;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			prefix = fileConfig.getDir() + CharPool.SLASH  + prefix;
 		}
 
 		ListObjectsV2Result objectListing = amazonS3.listObjectsV2(fileConfig.getBucketName(), prefix);
@@ -174,8 +188,6 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 	@Override
 	public void afterPropertiesSet() {
-		Integer maxConnections=fileConfig.getMaxConnections();
-		String region= fileConfig.getRegion();
 		String endpoint= fileConfig.getEndpoint();
 		String accessKey= fileConfig.getAccessKey();
 		String secretKey= fileConfig.getSecretKey();
@@ -183,9 +195,9 @@ public class OssFileTemplate implements InitializingBean, FileTemplate {
 
 
 		ClientConfiguration clientConfiguration = new ClientConfiguration();
-		clientConfiguration.setMaxConnections(maxConnections);
+		clientConfiguration.setMaxConnections(100);
 
-		AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(endpoint, region);
+		AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(endpoint,null);
 		AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 		AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);
 		this.amazonS3 = AmazonS3Client.builder()

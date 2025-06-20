@@ -1,6 +1,7 @@
 package com.qishanor.common.file.engine;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.text.CharPool;
 import cn.hutool.core.util.StrUtil;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
@@ -92,7 +93,10 @@ public class LocalFileTemplate implements FileTemplate {
 		String bucketName=fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			bucketName = bucketName + FileUtil.FILE_SEPARATOR + dir;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			bucketName = bucketName + FileUtil.FILE_SEPARATOR + fileConfig.getDir();
 		}
+
 		String path = fileConfig.getBasePath() + FileUtil.FILE_SEPARATOR + bucketName;
 
 		// 当 Bucket 不存在时创建
@@ -130,6 +134,8 @@ public class LocalFileTemplate implements FileTemplate {
 		String bucketName= fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			bucketName = bucketName + FileUtil.FILE_SEPARATOR + dir;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			bucketName = bucketName + FileUtil.FILE_SEPARATOR + fileConfig.getDir();
 		}
 
 		String path = fileConfig.getBasePath() + FileUtil.FILE_SEPARATOR + bucketName;
@@ -155,6 +161,8 @@ public class LocalFileTemplate implements FileTemplate {
 		String bucketName= fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			bucketName = bucketName + FileUtil.FILE_SEPARATOR + dir;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			bucketName = bucketName + FileUtil.FILE_SEPARATOR + fileConfig.getDir();
 		}
 
 		String path = fileConfig.getBasePath() + FileUtil.FILE_SEPARATOR + bucketName;
@@ -180,6 +188,8 @@ public class LocalFileTemplate implements FileTemplate {
 		String path = fileConfig.getBasePath() + FileUtil.FILE_SEPARATOR + fileConfig.getBucketName();
 		if (StrUtil.isNotBlank(dir)) {
 			path = path + FileUtil.FILE_SEPARATOR + dir;
+		}else if(StrUtil.isNotBlank(fileConfig.getDir())){
+			path = path + FileUtil.FILE_SEPARATOR + fileConfig.getDir();
 		}
 
 		return Arrays.stream(FileUtil.ls(path)).filter(file -> file.getName().startsWith(prefix)).map(file -> {

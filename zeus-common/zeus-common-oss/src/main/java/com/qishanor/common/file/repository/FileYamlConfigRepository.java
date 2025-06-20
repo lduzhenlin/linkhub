@@ -18,6 +18,9 @@ public class FileYamlConfigRepository {
         if (env.getProperty("file.storage.bucketName") != null) {
             fileConfig.setBucketName(env.getProperty("file.storage.bucketName"));
         }
+        if (env.getProperty("file.storage.dir") != null) {
+            fileConfig.setBucketName(env.getProperty("file.storage.dir"));
+        }
         if (env.getProperty("file.storage.basePath") != null) {
             fileConfig.setBasePath(env.getProperty("file.storage.basePath"));
         }
@@ -33,8 +36,8 @@ public class FileYamlConfigRepository {
         if (env.getProperty("file.storage.pathStyleAccess") != null) {
             fileConfig.setPathStyleAccess("0".equals(env.getProperty("file.storage.pathStyleAccess"))?Boolean.FALSE:Boolean.TRUE);
         }
-        if (env.getProperty("file.storage.region") != null) {
-            fileConfig.setRegion(env.getProperty("file.storage.region"));
+        if (env.getProperty("file.storage.customDomain") != null) {
+            fileConfig.setCustomDomain(env.getProperty("file.storage.customDomain"));
         }
         return fileConfig;
     }

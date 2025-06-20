@@ -11,6 +11,8 @@ public class FileConfig {
 
     private Long configId;
 
+    private String name;
+
     private String storageType="local";
     /**
      * 是否开启
@@ -21,6 +23,11 @@ public class FileConfig {
      * 默认的存储桶名称
      */
     private String bucketName="images";
+
+    /**
+     * 存储目录
+     */
+    private String dir;
 
     /**
      * 本地存储默认路径
@@ -49,24 +56,10 @@ public class FileConfig {
     private Boolean pathStyleAccess;
 
     /**
-     * 区域
-     */
-    private String region;
-
-    /**
      * 自定义域名
      */
     private String customDomain;
 
-    /**
-     * 应用ID
-     */
-    private String appId;
-
-    /**
-     * 最大线程数，默认： 100
-     */
-    private Integer maxConnections;
 
     public String generateFileName(MultipartFile multipartFile) {
         String name = multipartFile.getOriginalFilename();

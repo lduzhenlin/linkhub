@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,13 +39,15 @@ public class FileController {
      * @param fileName 文件名称
      * @param response 本地文件
      */
-    @SneakyThrows
     @SaIgnore
     @GetMapping("/{fileName}")
-    public void localFile(@PathVariable String fileName, HttpServletResponse response) {
-        S3Object s3Object=fileTemplate.getFile(fileName);
-        response.setContentType("application/octet-stream; charset=UTF-8");
-        IoUtil.copy(s3Object.getObjectContent(),response.getOutputStream());
+    public void localFile(@PathVariable String fileName, HttpServletResponse response){
+        try{
+            S3Object s3Object=fileTemplate.getFile(fileName);
+            response.setContentType("application/octet-stream; charset=UTF-8");
+            IoUtil.copy(s3Object.getObjectContent(),response.getOutputStream());
+        }catch (Exception e){}
+
     }
 
 

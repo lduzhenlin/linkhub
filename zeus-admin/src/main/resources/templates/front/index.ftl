@@ -191,7 +191,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-user text-theme-secondary"></i>
               </div>
-              <input type="tel"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
+              <input id="loginTel" type="tel"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
             </div>
           </div>
           <div>
@@ -200,7 +200,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
+              <input id="loginPassword" type="password"  class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
               <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                 <i class="fas fa-eye"></i>
               </button>
@@ -208,7 +208,7 @@
           </div>
           <div class="flex items-center justify-between">
             <label class="flex items-center space-x-2 cursor-pointer select-none">
-              <input type="checkbox" class="w-4 h-4 bg-theme border-theme rounded text-purple-500 focus:ring-0 focus:ring-offset-0">
+              <input id="loginRemember" type="checkbox" checked class="w-4 h-4 bg-theme border-theme rounded text-purple-500 focus:ring-0 focus:ring-offset-0">
               <span class="text-sm text-theme-secondary">记住我</span>
             </label>
             <button type="button" onclick="openForgotPasswordModal()" class="text-sm text-purple-500 hover:text-purple-400 transition-colors">忘记密码？</button>
@@ -245,7 +245,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-phone text-theme-secondary"></i>
               </div>
-              <input type="tel" id="tel" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
+              <input type="tel" id="registerTel" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入手机号">
             </div>
           </div>
           <div>
@@ -261,7 +261,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
+              <input type="password" id="registerPassword" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请输入密码">
                 <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                   <i class="fas fa-eye"></i>
                 </button>
@@ -274,7 +274,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-lock text-theme-secondary"></i>
               </div>
-              <input type="password" id="password1" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请再次输入密码">
+              <input type="password" id="registerConfirmPassword" class="w-full pl-10 pr-4 py-2.5 bg-theme border border-theme rounded-md text-sm text-theme focus:outline-none focus:border-purple-500 transition-colors" placeholder="请再次输入密码">
                 <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-secondary hover:text-theme transition-colors" onclick="togglePassword(this)">
                   <i class="fas fa-eye"></i>
                 </button>
@@ -282,7 +282,7 @@
             </div>
           </div>
           <div class="flex items-start space-x-2">
-            <input type="checkbox" class="mt-1 w-4 h-4 bg-theme border-theme rounded text-purple-500 focus:ring-0 focus:ring-offset-0">
+            <input id="registerAgreement" type="checkbox" class="mt-1 w-4 h-4 bg-theme border-theme rounded text-purple-500 focus:ring-0 focus:ring-offset-0">
             <span class="text-sm text-theme-secondary">我已阅读并同意 <a href="#" class="text-purple-500 hover:text-purple-400">服务条款</a> 和 <a href="#" class="text-purple-500 hover:text-purple-400">隐私政策</a></span>
           </div>
           <button type="button" onclick="handleRegister()" class="w-full py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-md transition-colors">
@@ -700,9 +700,9 @@
     }
 
     function handleLogin() {
-      const tel = $('#loginForm input[type="tel"]').val();
-      const password = $('#loginForm input[type="password"]').val();
-      const remember = $('#loginForm input[type="checkbox"]').is(':checked');
+      const tel = $('#loginTel').val().trim();
+      const password = $('#loginPassword').val().trim();
+      const remember = $('#loginRemember').is(':checked');
 
       if (!tel || !password) {
         alert('请填写完整的登录信息');
@@ -716,7 +716,7 @@
         method:"post",
         dataType:"json",
         headers:{'TENANT-ID':localStorage.getItem("tenantId")},
-        data:{tel:tel,password:password},
+        data:{tel:tel,password:password,remember},
         success:function(res){
           if(res.code==0){
             //登录成功
@@ -832,11 +832,11 @@
     }
 
     function handleRegister() {
-      const tel = $('#registerForm input[type="tel"]').val().trim();
+      const tel = $('#registerTel').val().trim();
       const code = $('#registerCode').val().trim();
-      const password = $('#registerForm input[type="password"]').eq(0).val().trim();
-      const confirmPassword = $('#registerForm input[type="password"]').eq(1).val().trim();
-      const agreement = $('#registerForm input[type="checkbox"]').is(':checked');
+      const password = $('#registerPassword').eq(0).val().trim();
+      const confirmPassword = $('#registerConfirmPassword').eq(1).val().trim();
+      const agreement = $('#registerAgreement').is(':checked');
 
       if (!tel ||!code|| !password || !confirmPassword) {
         alert('请填写完整的注册信息');

@@ -32,14 +32,14 @@ public class UserController {
 
     @SaIgnore
     @PostMapping("/login")
-    public Object login(String tel, String password) {
+    public Object login(String tel, String password,Boolean remember) {
         //设置租户
         SysUser dbUser=sysUserService.getOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername,tel).or().eq(SysUser::getTel,tel));
         if(ObjUtil.isEmpty(dbUser)||!BCrypt.checkpw(password,dbUser.getPassword())){
             return R.failed("用户名或密码错误");
         }
 
-        StpUtil.login(dbUser.getUserId());
+        StpUtil.login(dbUser.getUserId(),remember);
         StpUtil.getSession().set(CacheConstant.USER_ID,dbUser.getUserId());
         StpUtil.getSession().set(CacheConstant.USER_NAME,dbUser.getUsername());
         StpUtil.getSession().set(CacheConstant.TENANT_ID,dbUser.getTenantId());
