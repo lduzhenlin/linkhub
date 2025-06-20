@@ -35,7 +35,7 @@ public class Link extends Model<Link> {
     /**
      * 是否删除 1：已删除 0：正常
      */
-//    @TableLogic
+    @TableLogic
     @TableField(fill = FieldFill.INSERT)
     private String delFlag;
     private Long tenantId;
