@@ -16,7 +16,7 @@
     :root {
       --bg-dark: #1a1b1e;
       --bg-card-dark: #25262b;
-      --bg-light: #f8f9fa;
+      --bg-light: #f1f3f4;
       --bg-card-light: #ffffff;
     }
     
@@ -46,9 +46,10 @@
     }
     .light .bg-card-theme {
       background-color: var(--bg-card-light);
+      border: 1px solid #e5e7eb;
     }
     .light .border-theme {
-      border-color: #e5e7eb;
+      border-color: #d1d5db;
     }
     .light .text-theme {
       color: #1f2937;
@@ -59,7 +60,12 @@
 
     /* 卡片阴影 */
     .light .card-shadow {
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    }
+    
+    /* 深色主题阴影 */
+    .dark .card-shadow {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
     }
 
     /* 移动端导航菜单 */
@@ -71,6 +77,20 @@
       .mobile-menu.active {
         transform: translateX(0);
       }
+    }
+
+    /* 主题切换图标样式 */
+    .dark .fa-moon {
+      display: inline-block !important;
+    }
+    .dark .fa-sun {
+      display: none !important;
+    }
+    .light .fa-moon {
+      display: none !important;
+    }
+    .light .fa-sun {
+      display: inline-block !important;
     }
 
   </style>
@@ -102,7 +122,7 @@
             
             <div class="flex items-center space-x-4">
               <button id="themeToggle" class="text-theme-secondary hover:text-purple-500 transition-colors" title="切换主题">
-                <i class="fas fa-moon"></i>
+                <i class="fas fa-moon hidden"></i>
                 <i class="fas fa-sun"></i>
               </button>
               <div class="h-4 w-px bg-theme-secondary opacity-20 hidden sm:block"></div>
@@ -641,6 +661,12 @@
     initOp()
     //页面加载初始化操作
     function initOp(){
+      // 无论是否登录，都加载共享链接分类
+      loadCategories()
+      
+      // 默认显示共享链接
+      loadSharedLinks()
+      
       let userId=localStorage.getItem("userId")
       if(""!=userId&&undefined!=userId){
         if(isLogin()){
@@ -650,6 +676,7 @@
           $('#usernameDisplay').text(localStorage.getItem("username"));
           //显示悬浮菜单
           $('#floatBtn').removeClass('hidden').show()
+          // 重新加载分类（包括用户个人分类）
           loadCategories()
         }
       }
@@ -1177,6 +1204,7 @@
 
           if(res.code==0){
             res.data.forEach(link=>{
+              const isShared = link.isShared === '1';
               linkList.append(`
                   <div   class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
                    <div class="flex items-start justify-between mb-2">
@@ -1193,9 +1221,15 @@
                         <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteLinkModal('${r'${link.linkId}'}')" title="删除">
                           <i class="fas fa-trash-alt text-sm"></i>
                         </button>
+                                                <button class="text-theme-secondary hover:text-green-500 transition-colors p-1.5 rounded-full hover:bg-theme" 
+                          onclick="${r'${isShared ? "unshareLink" : "shareLink"}'}('${r'${link.linkId}'}')" 
+                          title="${r'${isShared ? "取消共享" : "共享链接"}'}">
+                          <i class="fas fa-${r'${isShared ? "share-alt" : "share"}'} text-sm"></i>
+                        </button>
                        </div>
                    </div>
                    <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
+                   ${r'${isShared ? "<div class=\"mt-2 text-xs text-green-500\"><i class=\"fas fa-check-circle mr-1\"></i>已共享</div>" : ""}'}
                  </div>
               `)
             })
@@ -1340,31 +1374,51 @@
     function loadCategories() {
       let categories = [];
 
-      //加载远程
-      $.ajax({
-        url: "/api/category/list",
-        method: "get",
-        dataType: "json",
-        data: "json",
-        async: false,
-        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
-        success: function(res) {
-          if (res.code == 0) {
-            res.data.forEach(u => categories.push(u));
-            //加载书签数据
-            if(categories.length>0){
-              loadLinks(categories[0].categoryId);
-            }
-
-          } else {
-            toastr.error("加载失败");
-          }
-        }
-      });
+      // 添加共享链接分类（写死在前端，始终显示）
+      const sharedCategory = {
+        categoryId: 'shared',
+        name: '共享链接'
+      };
 
       //生成横向导航（桌面端）
       const navList = $('#navList');
       navList.empty();
+      
+      // 先添加共享链接分类
+      navList.append(`
+        <button onclick="loadSharedLinks()" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">
+          <i class="fas fa-share-alt mr-1"></i>${r'${sharedCategory.name}'}
+        </button>
+      `);
+
+      // 尝试加载用户分类（仅在登录状态下）
+      let userId = localStorage.getItem("userId");
+      if (userId && userId !== "" && userId !== "undefined") {
+        $.ajax({
+          url: "/api/category/list",
+          method: "get",
+          dataType: "json",
+          data: "json",
+          async: false,
+          headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+          success: function(res) {
+            if (res.code == 0) {
+              res.data.forEach(u => categories.push(u));
+              //加载书签数据
+              if(categories.length>0){
+                loadLinks(categories[0].categoryId);
+              }
+            } else {
+              console.log("加载用户分类失败，但共享链接分类仍可正常使用");
+            }
+          },
+          error: function() {
+            console.log("加载用户分类失败，但共享链接分类仍可正常使用");
+          }
+        });
+      }
+      
+      // 再添加其他分类
       categories.forEach(category => {
         navList.append(`
           <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">${r'${category.name}'}</button>
@@ -1374,6 +1428,16 @@
       //生成移动端导航菜单
       const mobileNavList = $('#mobileNavList');
       mobileNavList.empty();
+      
+      // 先添加共享链接分类
+      mobileNavList.append(`
+        <button onclick="loadSharedLinks(); $('#mobileMenu').removeClass('active');" 
+          class="w-full px-4 py-2 text-sm text-theme-secondary hover:bg-theme rounded transition-colors text-left">
+          <i class="fas fa-share-alt mr-1"></i>${r'${sharedCategory.name}'}
+        </button>
+      `);
+      
+      // 再添加其他分类
       categories.forEach(category => {
         mobileNavList.append(`
           <button onclick="loadLinks('${r'${category.categoryId}'}'); $('#mobileMenu').removeClass('active');"
@@ -1411,6 +1475,263 @@
             </div>
           </div>
         `);
+      });
+    }
+
+    // 加载共享链接
+    function loadSharedLinks() {
+      $.ajax({
+        url: "/api/link/shared",
+        method: "get",
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        success: function(res) {
+          const linkList = $("#linkList");
+          linkList.empty();
+
+          if (res.code == 0) {
+            if (res.data.length === 0) {
+              linkList.append(`
+                <div class="col-span-full text-center py-8">
+                  <i class="fas fa-share-alt text-4xl text-theme-secondary mb-4"></i>
+                  <p class="text-theme-secondary">暂无共享链接</p>
+                </div>
+              `);
+            } else {
+              res.data.forEach(link => {
+                linkList.append(`
+                  <div class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
+                    <div class="flex items-start justify-between mb-2">
+                      <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
+                          <img src="${r'${link.iconUrl}'}" class="w-6 h-6">
+                        </div>
+                        <a href="javascript:void(0)" onclick="openLink('${r'${link.url}'}')">
+                          <h3 class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3>
+                        </a>
+                      </div>
+                      <div class="flex items-center space-x-1">
+                        <button class="text-theme-secondary hover:text-green-500 transition-colors p-1.5 rounded-full hover:bg-theme" 
+                          onclick="copySharedLink('${r'${link.linkId}'}')" title="复制到我的分类">
+                          <i class="fas fa-copy text-sm"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
+                    <div class="flex items-center justify-between mt-2 text-xs text-theme-secondary">
+                              <span>来自: ${r'${link.createBy || "未知用户"}'}</span>
+        <span>共享时间: ${r'${link.sharedTime ? new Date(link.sharedTime).toLocaleDateString() : "未知"}'}</span>
+                    </div>
+                  </div>
+                `);
+              });
+            }
+          } else {
+            toastr.error("加载共享链接失败");
+          }
+        }
+      });
+    }
+
+    // 复制共享链接到个人分类
+    function copySharedLink(sharedLinkId) {
+      // 获取当前用户信息
+      const currentUsername = localStorage.getItem("username");
+      if (!currentUsername) {
+        toastr.error("请先登录");
+        return;
+      }
+      
+      // 获取共享链接信息，检查是否已经属于当前用户
+      $.ajax({
+        url: "/api/link/getById",
+        method: "get",
+        data: { linkId: sharedLinkId },
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        success: function(res) {
+          if (res.code == 0) {
+            const link = res.data;
+            // 检查链接是否已经属于当前用户
+            if (link.createBy === currentUsername) {
+              toastr.warning("该链接已经属于您，无需重复复制");
+              return;
+            }
+            
+            // 如果链接不属于当前用户，则继续复制流程
+            loadUserCategoriesForCopy(sharedLinkId);
+          } else {
+            toastr.error("获取链接信息失败");
+          }
+        },
+        error: function() {
+          toastr.error("网络错误，请稍后重试");
+        }
+      });
+    }
+    
+    // 加载用户分类用于复制
+    function loadUserCategoriesForCopy(sharedLinkId) {
+      // 获取用户分类列表
+      $.ajax({
+        url: "/api/category/list",
+        method: "get",
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        success: function(res) {
+          if (res.code == 0 && res.data.length > 0) {
+            // 弹出选择分类的对话框
+            showCopyCategoryModal(sharedLinkId, res.data);
+          } else {
+            toastr.error("请先创建分类");
+          }
+        }
+      });
+    }
+
+    // 显示复制分类选择对话框
+    function showCopyCategoryModal(sharedLinkId, categories) {
+      let modalHtml = `
+        <div id="copyCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-card-theme rounded-lg w-[400px] relative">
+            <div class="p-4 border-b border-theme flex justify-between items-center">
+              <h2 class="text-base font-medium text-theme">选择目标分类</h2>
+              <button onclick="closeCopyCategoryModal()" class="text-theme-secondary hover:text-theme transition-colors">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="p-6">
+              <p class="text-sm text-theme-secondary mb-4">请选择要将链接复制到哪个分类：</p>
+              <div class="space-y-2" id="categoryOptions">`;
+      
+      categories.forEach((category, index) => {
+        modalHtml += `
+          <button onclick="selectCategory('${r'${category.categoryId}'}', this)" 
+            class="category-option w-full px-4 py-2 text-sm text-theme bg-theme border border-theme rounded hover:border-purple-500 transition-colors text-left"
+            data-category-id="${r'${category.categoryId}'}">
+            ${r'${category.name}'}
+          </button>`;
+      });
+      
+      modalHtml += `
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button onclick="confirmCopySharedLink('${r'${sharedLinkId}'}')" 
+                  id="confirmBtn"
+                  class="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled>
+                  确认复制
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      
+      $('body').append(modalHtml);
+    }
+
+    // 关闭复制分类选择对话框
+    function closeCopyCategoryModal() {
+      // 清理选中的分类ID
+      $('#copyCategoryModal').removeData('selected-category-id');
+      $('#copyCategoryModal').remove();
+    }
+
+    // 选择分类
+    function selectCategory(categoryId, element) {
+      // 移除所有分类的选中样式
+      $('.category-option').removeClass('bg-purple-500 text-white border-purple-500').addClass('bg-theme text-theme border-theme');
+      
+      // 给当前选中的分类添加样式
+      $(element).removeClass('bg-theme text-theme border-theme').addClass('bg-purple-500 text-white border-purple-500');
+      
+      // 启用确认按钮
+      $('#confirmBtn').prop('disabled', false);
+      
+      // 存储选中的分类ID
+      $('#copyCategoryModal').data('selected-category-id', categoryId);
+    }
+
+    // 确认复制共享链接
+    function confirmCopySharedLink(sharedLinkId) {
+      const targetCategoryId = $('#copyCategoryModal').data('selected-category-id');
+      
+      if (!targetCategoryId) {
+        toastr.warning('请先选择一个分类');
+        return;
+      }
+      
+      $.ajax({
+        url: "/api/link/copy",
+        method: "post",
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        data: {
+          sharedLinkId: sharedLinkId,
+          targetCategoryId: targetCategoryId
+        },
+        success: function(res) {
+          if (res.code == 0) {
+            toastr.success("复制成功！链接已添加到您的分类中");
+            closeCopyCategoryModal();
+          } else {
+            // 根据不同的错误情况显示不同的提示
+            if (res.msg && res.msg.includes("已经属于您")) {
+              toastr.warning(res.msg);
+            } else {
+              toastr.error(res.msg || "复制失败");
+            }
+          }
+        },
+        error: function() {
+          toastr.error("网络错误，请稍后重试");
+        }
+      });
+    }
+
+    // 共享链接
+    function shareLink(linkId) {
+      $.ajax({
+        url: "/api/link/share",
+        method: "post",
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        data: { linkId: linkId },
+        success: function(res) {
+          if (res.code == 0) {
+            toastr.success("共享成功！");
+            // 重新加载当前分类的链接
+            const currentCategoryId = $('.linkCategoryId').val();
+            if (currentCategoryId) {
+              loadLinks(currentCategoryId);
+            }
+          } else {
+            toastr.error(res.msg || "共享失败");
+          }
+        }
+      });
+    }
+
+    // 取消共享链接
+    function unshareLink(linkId) {
+      $.ajax({
+        url: "/api/link/unshare",
+        method: "post",
+        dataType: "json",
+        headers:{'TENANT-ID':localStorage.getItem("tenantId")},
+        data: { linkId: linkId },
+        success: function(res) {
+          if (res.code == 0) {
+            toastr.success("已取消共享");
+            // 重新加载当前分类的链接
+            const currentCategoryId = $('.linkCategoryId').val();
+            if (currentCategoryId) {
+              loadLinks(currentCategoryId);
+            }
+          } else {
+            toastr.error(res.msg || "取消共享失败");
+          }
+        }
       });
     }
 

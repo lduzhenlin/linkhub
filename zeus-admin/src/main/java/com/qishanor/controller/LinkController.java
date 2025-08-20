@@ -18,10 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import cn.dev33.satoken.stp.StpUtil;
+import com.qishanor.common.core.constant.CacheConstant;
 
 @Data
 @RequiredArgsConstructor
-@SaCheckLogin
 @RestController
 @RequestMapping("/api/link")
 public class LinkController {
@@ -33,7 +34,25 @@ public class LinkController {
 
     @GetMapping("/list")
     public Object list(String categoryId,String linkTitle){
-        List<Link> lists =linkService.list(Wrappers.<Link>lambdaQuery().eq(StrUtil.isNotBlank(categoryId),Link::getCategoryId,categoryId).like(StrUtil.isNotBlank(linkTitle), Link::getTitle,linkTitle));
+
+        // 检查用户是否登录
+        boolean isLogin = StpUtil.isLogin();
+
+
+
+        // 构建查询条件
+        var queryWrapper = Wrappers.<Link>lambdaQuery()
+                .eq(ObjUtil.isNotEmpty(categoryId),Link::getCategoryId,categoryId)
+                .like(StrUtil.isNotEmpty(linkTitle), Link::getTitle, linkTitle);
+
+
+        // 如果用户未登录，只返回共享链接
+        if (!isLogin) {
+            queryWrapper.eq(Link::getIsShared, "1");
+        }
+        //否则 如果用户已登录，返回共享链接 + 个人链接
+
+        List<Link> lists =linkService.list(queryWrapper);
         lists.forEach(link->{
             //如果图标为空，则使用默认图标
             if(StrUtil.isBlank(link.getIcon())){
@@ -58,6 +77,7 @@ public class LinkController {
     }
 
 
+    @SaCheckLogin
     @PostMapping
     public Object save(Link link) throws IOException {
         if(ObjUtil.isEmpty(link) ||StrUtil.isBlank(link.getTitle())||StrUtil.isBlank(link.getUrl())){
@@ -77,6 +97,7 @@ public class LinkController {
         return R.ok();
     }
 
+    @SaCheckLogin
     @PutMapping
     public Object edit(Link link) throws IOException {
         if(ObjUtil.isEmpty(link) ||StrUtil.isBlank(link.getTitle())||StrUtil.isBlank(link.getUrl())){
@@ -125,6 +146,7 @@ public class LinkController {
         return R.ok();
     }
 
+    @SaCheckLogin
     @DeleteMapping
     public Object delete(Long linkId){
 
@@ -137,4 +159,81 @@ public class LinkController {
         return R.ok();
     }
 
+    /**
+     * 共享链接
+     */
+    @SaCheckLogin
+    @PostMapping("/share")
+    public Object shareLink(Long linkId) {
+        if (ObjUtil.isEmpty(linkId)) {
+            return R.failed("链接ID不能为空");
+        }
+        
+        boolean success = linkService.shareLink(linkId);
+        if (success) {
+            return R.ok("共享成功");
+        } else {
+            return R.failed("共享失败");
+        }
+    }
+
+    /**
+     * 取消共享链接
+     */
+    @SaCheckLogin
+    @PostMapping("/unshare")
+    public Object unshareLink(Long linkId) {
+        if (ObjUtil.isEmpty(linkId)) {
+            return R.failed("链接ID不能为空");
+        }
+        
+        boolean success = linkService.unshareLink(linkId);
+        if (success) {
+            return R.ok("取消共享成功");
+        } else {
+            return R.failed("取消共享失败");
+        }
+    }
+
+    /**
+     * 获取所有共享的链接
+     */
+    @GetMapping("/shared")
+    public Object getSharedLinks() {
+        List<Link> sharedLinks = linkService.getSharedLinks();
+        sharedLinks.forEach(link -> {
+            //如果图标为空，则使用默认图标
+            if(StrUtil.isBlank(link.getIcon())){
+                link.setIconUrl("https://other-bucket-1300160460.cos.ap-beijing.myqcloud.com/nav%2Flink-default-icon2.svg");
+            }else{
+                link.setIconUrl("/api/file/"+link.getIcon());
+            }
+        });
+        
+        return R.ok(sharedLinks);
+    }
+
+    /**
+     * 复制共享链接到个人分类
+     */
+    @SaCheckLogin
+    @PostMapping("/copy")
+    public Object copySharedLink(Long sharedLinkId, String targetCategoryId) {
+        if (ObjUtil.isEmpty(sharedLinkId) || StrUtil.isBlank(targetCategoryId)) {
+            return R.failed("参数不能为空");
+        }
+        
+        // 获取当前登录用户信息
+        String currentUsername = (String) StpUtil.getSession().get(CacheConstant.USER_NAME);
+        if (StrUtil.isBlank(currentUsername)) {
+            return R.failed("用户未登录");
+        }
+        
+        boolean success = linkService.copySharedLink(sharedLinkId, targetCategoryId, currentUsername);
+        if (success) {
+            return R.ok("复制成功");
+        } else {
+            return R.failed("复制失败：该链接已经属于您，无需重复复制");
+        }
+    }
 }

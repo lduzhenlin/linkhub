@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://154.201.71.223:3406/zeus_nav_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=PRC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/zeus_nav_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=PRC&allowPublicKeyRetrieval=true
     username: zeus_nav_dev
     password: 12345678
 

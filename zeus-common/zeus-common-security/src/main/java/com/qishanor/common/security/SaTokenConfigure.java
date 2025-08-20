@@ -26,7 +26,17 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/css/**",
                         "/image/**",
                         "/fonts/**",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/",                    // 排除首页
+                        "/api/user/login",     // 排除用户登录接口
+                        "/api/user/register",  // 排除用户注册接口
+                        "/api/user/isLogin",   // 排除检查登录状态接口
+                        "/api/sms/register",   // 排除发送注册短信接口
+                        "/api/sms/forgotPassword", // 排除发送找回密码短信接口
+                        "/api/category/list",  // 排除分类列表接口，允许未登录用户访问
+                        "/api/link/list",      // 排除链接列表接口，允许未登录用户访问
+                        "/api/link/getById",   // 排除根据ID获取链接接口，允许未登录用户访问
+                        "/api/link/shared"     // 排除共享链接接口，允许未登录用户访问
 //                        "/**/*.js",
 //                        "/**/*.css",
 //                        "/**/*.png",

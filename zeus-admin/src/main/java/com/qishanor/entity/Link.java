@@ -22,6 +22,20 @@ public class Link extends Model<Link> {
     private String icon;
     private String categoryId;
 
+    /**
+     * 是否共享 1：已共享 0：未共享
+     */
+    private String isShared;
+    
+    /**
+     * 共享时间
+     */
+    private LocalDateTime sharedTime;
+    
+    /**
+     * 原始链接ID（用于复制模式）
+     */
+    private Long originalLinkId;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
@@ -39,7 +53,6 @@ public class Link extends Model<Link> {
     @TableField(fill = FieldFill.INSERT)
     private String delFlag;
     private Long tenantId;
-
 
     @TableField(exist = false)
     private String iconUrl;
