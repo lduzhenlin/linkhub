@@ -1,8 +1,8 @@
-# LinkHub智能导航聚合平台
+# LinkHub导航聚合平台
 
 ## 📖 项目简介
 
-**LinkHub** 是一个基于 Spring Boot 3.x 构建的现代化智能导航聚合平台，专为技术人员、团队和企业设计。平台采用多租户架构，支持分类管理、链接管理、智能搜索、链接共享等核心功能，为用户提供高效、美观、个性化的网址导航服务。
+**LinkHub** 是一个基于 Spring Boot 3.x 构建的现代化导航聚合平台，专为技术人员、团队和企业设计。平台采用多租户架构，支持分类管理、链接管理、智能搜索、链接共享等核心功能，为用户提供高效、美观、个性化的网址导航服务。
 
 ### 🎯 项目由来
 作为一名技术人员，平常收藏的技术资源较多，之前一直保存在浏览器标签中。浏览器的缺陷是无法跨设备同步，且网上现有的标签管理工具用着总感觉不够顺手。因此决定自己开发一个功能简洁、体验优秀的导航平台，既能实现个人链接管理，又能将优质资源分享给更多人。
@@ -170,9 +170,10 @@ spring:
 # 文件存储配置
 file:
   storage:
-    type: local  # local, aliyun, tencent
-    local:
-      path: /path/to/upload
+    enable: true
+    type: local
+    bucketName: images
+    basePath: /upload
     #aliyun:
       #endpoint: your_endpoint
       #accessKey: your_access_key
