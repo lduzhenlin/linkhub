@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN" class="dark" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkHub</title>
-<#--  <script src="https://cdn.tailwindcss.com"></script>-->
+  <!--  <script src="https://cdn.tailwindcss.com"></script>-->
   <script src="/js/tailwindcss-4.1.10.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <#--  消息弹框-->
+ <!-- 消息弹框 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <style>
@@ -646,7 +646,7 @@
 
     // 将handleSearch函数移到document.ready外部
     function handleSearch(inputId) {
-      const keyword = $(`#${r'${inputId}'}`).val().trim();
+      const keyword = $(`#${inputId}`).val().trim();
       if (keyword) {
         loadLinks(null, keyword);
         // 如果是移动端搜索，关闭移动菜单
@@ -826,11 +826,11 @@
         return;
       }
       // 禁用按钮并开始倒计时
-      $('#sendRegisterCodeBtn').prop('disabled', true).text(`已发送(${r'${registerCodeCountdown}'}s)`);
+      $('#sendRegisterCodeBtn').prop('disabled', true).text(`已发送(${registerCodeCountdown}s)`);
       registerCodeTimer = setInterval(() => {
         registerCodeCountdown--;
         if (registerCodeCountdown > 0) {
-          $('#sendRegisterCodeBtn').text(`已发送(${r'${registerCodeCountdown}'}s)`);
+          $('#sendRegisterCodeBtn').text(`已发送(${registerCodeCountdown})`);
         } else {
           clearInterval(registerCodeTimer);
           $('#sendRegisterCodeBtn').prop('disabled', false).text('发送验证码');
@@ -927,11 +927,11 @@
         return;
       }
       // 禁用按钮并开始倒计时
-      $('#sendForgotCodeBtn').prop('disabled', true).text(`已发送(${r'${forgotCodeCountdown}'}s)`);
+      $('#sendForgotCodeBtn').prop('disabled', true).text(`已发送(${forgotCodeCountdown}s)`);
       forgotCodeTimer = setInterval(() => {
         forgotCodeCountdown--;
         if (forgotCodeCountdown > 0) {
-          $('#sendForgotCodeBtn').text(`已发送(${r'${forgotCodeCountdown}'}s)`);
+          $('#sendForgotCodeBtn').text(`已发送(${forgotCodeCountdown}s)`);
         } else {
           clearInterval(forgotCodeTimer);
           $('#sendForgotCodeBtn').prop('disabled', false).text('发送验证码');
@@ -1001,7 +1001,7 @@
       //待确定
       //ttps://xxapi.cn/doc/ico
       //https://www.favicon.vip/
-      let iconUrl= `https://icon.bqb.cool?url=${r'${linkUrl}'}`;
+      let iconUrl= `https://icon.bqb.cool?url=${linkUrl}`;
 
       $("#"+target+"IconUrl").val(iconUrl);
       //预览图标
@@ -1210,26 +1210,26 @@
                    <div class="flex items-start justify-between mb-2">
                        <div class="flex items-center space-x-2">
                          <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                           <img  src="${r'${link.iconUrl}'}" class="w-6 h-6">
+                           <img  src="${link.iconUrl}" class="w-6 h-6">
                          </div>
-                         <a href="javascript:void(0)"  onclick="openLink('${r'${link.url}'}')"><h3  class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3></a>
+                         <a href="javascript:void(0)"  onclick="openLink('${link.url}')"><h3  class="text-sm font-medium text-theme hover:cursor-pointer">${link.title}</h3></a>
                        </div>
                        <div class="flex items-center space-x-1">
-                        <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openLinkEditModal('${r'${link.linkId}'}')" title="编辑">
+                        <button class="text-theme-secondary hover:text-purple-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openLinkEditModal('${link.linkId}')" title="编辑">
                           <i class="fas fa-edit text-sm"></i>
                         </button>
-                        <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteLinkModal('${r'${link.linkId}'}')" title="删除">
+                        <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 rounded-full hover:bg-theme" onclick="openDeleteLinkModal('${link.linkId}')" title="删除">
                           <i class="fas fa-trash-alt text-sm"></i>
                         </button>
                                                 <button class="text-theme-secondary hover:text-green-500 transition-colors p-1.5 rounded-full hover:bg-theme" 
-                          onclick="${r'${isShared ? "unshareLink" : "shareLink"}'}('${r'${link.linkId}'}')" 
-                          title="${r'${isShared ? "取消共享" : "共享链接"}'}">
-                          <i class="fas fa-${r'${isShared ? "share-alt" : "share"}'} text-sm"></i>
+                          onclick="${isShared ? "unshareLink" : "shareLink"}('${link.linkId}')" 
+                          title="${isShared ? "取消共享" : "共享链接"}">
+                          <i class="fas fa-${isShared ? "share-alt" : "share"} text-sm"></i>
                         </button>
                        </div>
                    </div>
-                   <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
-                   ${r'${isShared ? "<div class=\"mt-2 text-xs text-green-500\"><i class=\"fas fa-check-circle mr-1\"></i>已共享</div>" : ""}'}
+                   <p class="text-xs text-theme-secondary line-clamp-2">${link.description}</p>
+                   ${isShared ? "<div class=\"mt-2 text-xs text-green-500\"><i class=\"fas fa-check-circle mr-1\"></i>已共享</div>" : ""}
                  </div>
               `)
             })
@@ -1387,7 +1387,7 @@
       // 先添加共享链接分类
       navList.append(`
         <button onclick="loadSharedLinks()" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">
-          <i class="fas fa-share-alt mr-1"></i>${r'${sharedCategory.name}'}
+          <i class="fas fa-share-alt mr-1"></i>${sharedCategory.name}
         </button>
       `);
 
@@ -1421,7 +1421,7 @@
       // 再添加其他分类
       categories.forEach(category => {
         navList.append(`
-          <button onclick="loadLinks('${r'${category.categoryId}'}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">${r'${category.name}'}</button>
+          <button onclick="loadLinks('${category.categoryId}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">${category.name}</button>
         `);
       });
 
@@ -1433,16 +1433,16 @@
       mobileNavList.append(`
         <button onclick="loadSharedLinks(); $('#mobileMenu').removeClass('active');" 
           class="w-full px-4 py-2 text-sm text-theme-secondary hover:bg-theme rounded transition-colors text-left">
-          <i class="fas fa-share-alt mr-1"></i>${r'${sharedCategory.name}'}
+          <i class="fas fa-share-alt mr-1"></i>${sharedCategory.name}
         </button>
       `);
       
       // 再添加其他分类
       categories.forEach(category => {
         mobileNavList.append(`
-          <button onclick="loadLinks('${r'${category.categoryId}'}'); $('#mobileMenu').removeClass('active');"
+          <button onclick="loadLinks('${category.categoryId}'); $('#mobileMenu').removeClass('active');"
             class="w-full px-4 py-2 text-sm text-theme-secondary hover:bg-theme rounded transition-colors text-left">
-            ${r'${category.name}'}
+            ${category.name}
           </button>
         `);
       });
@@ -1452,7 +1452,7 @@
       selectCategoryList.empty();
       categories.forEach(category => {
         selectCategoryList.append(`
-          <option value="${r'${category.categoryId}'}">${r'${category.name}'}</option>
+          <option value="${category.categoryId}">${category.name}</option>
         `);
       });
 
@@ -1462,14 +1462,14 @@
       categories.forEach(category => {
         categoryList.append(`
           <div class="flex items-center justify-between p-3 bg-theme rounded group">
-            <span class="text-sm text-theme">${r'${category.name}'}</span>
+            <span class="text-sm text-theme">${category.name}</span>
             <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <button class="text-theme-secondary hover:text-blue-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" 
-                onclick="openEditCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="编辑分类">
+                onclick="openEditCategoryModal('${category.categoryId}','${category.name}')" title="编辑分类">
                 <i class="fas fa-edit"></i>
               </button>
               <button class="text-theme-secondary hover:text-red-500 transition-colors p-1.5 hover:bg-black hover:bg-opacity-10 rounded" 
-                onclick="openDeleteCategoryModal('${r'${category.categoryId}'}','${r'${category.name}'}')" title="删除分类">
+                onclick="openDeleteCategoryModal('${category.categoryId}','${category.name}')" title="删除分类">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -1504,23 +1504,23 @@
                     <div class="flex items-start justify-between mb-2">
                       <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
-                          <img src="${r'${link.iconUrl}'}" class="w-6 h-6">
+                          <img src="${link.iconUrl}" class="w-6 h-6">
                         </div>
-                        <a href="javascript:void(0)" onclick="openLink('${r'${link.url}'}')">
-                          <h3 class="text-sm font-medium text-theme hover:cursor-pointer">${r'${link.title}'}</h3>
+                        <a href="javascript:void(0)" onclick="openLink('${link.url}')">
+                          <h3 class="text-sm font-medium text-theme hover:cursor-pointer">${link.title}</h3>
                         </a>
                       </div>
                       <div class="flex items-center space-x-1">
                         <button class="text-theme-secondary hover:text-green-500 transition-colors p-1.5 rounded-full hover:bg-theme" 
-                          onclick="copySharedLink('${r'${link.linkId}'}')" title="复制到我的分类">
+                          onclick="copySharedLink('${link.linkId}')" title="复制到我的分类">
                           <i class="fas fa-copy text-sm"></i>
                         </button>
                       </div>
                     </div>
-                    <p class="text-xs text-theme-secondary line-clamp-2">${r'${link.description}'}</p>
+                    <p class="text-xs text-theme-secondary line-clamp-2">${link.description}</p>
                     <div class="flex items-center justify-between mt-2 text-xs text-theme-secondary">
-                              <span>来自: ${r'${link.createBy || "未知用户"}'}</span>
-        <span>共享时间: ${r'${link.sharedTime ? new Date(link.sharedTime).toLocaleDateString() : "未知"}'}</span>
+                      <span>来自: ${link.createBy || "未知用户"}</span>
+                      <span>共享时间: ${link.sharedTime ? new Date(link.sharedTime).toLocaleDateString() : "未知"}</span>
                     </div>
                   </div>
                 `);
@@ -1606,17 +1606,17 @@
       
       categories.forEach((category, index) => {
         modalHtml += `
-          <button onclick="selectCategory('${r'${category.categoryId}'}', this)" 
+          <button onclick="selectCategory('${category.categoryId}', this)" 
             class="category-option w-full px-4 py-2 text-sm text-theme bg-theme border border-theme rounded hover:border-purple-500 transition-colors text-left"
-            data-category-id="${r'${category.categoryId}'}">
-            ${r'${category.name}'}
+            data-category-id="${category.categoryId}">
+            ${category.name}
           </button>`;
       });
       
       modalHtml += `
               </div>
               <div class="mt-6 flex justify-end">
-                <button onclick="confirmCopySharedLink('${r'${sharedLinkId}'}')" 
+                <button onclick="confirmCopySharedLink('${sharedLinkId}')" 
                   id="confirmBtn"
                   class="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled>
