@@ -2,6 +2,8 @@ package com.qishanor.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.qishanor.entity.Category;
 import com.qishanor.Service.CategoryService;
 import com.qishanor.common.core.util.R;
@@ -22,7 +24,9 @@ public class CategoryController {
 
     @GetMapping("/list")
     public Object list(){
-       List<Category> categoryList=categoryService.list();
+       List<Category> categoryList = categoryService.lambdaQuery()
+               .orderByAsc(Category::getSort)
+               .list();
        return R.ok(categoryList);
     }
     @PostMapping()
@@ -30,6 +34,14 @@ public class CategoryController {
 //        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
 //        category.setTenantId(tenantId);
 
+        Category maxSortCategory = categoryService.lambdaQuery()
+                .select(Category::getSort)
+                .orderByDesc(Category::getSort)
+                .last("limit 1")
+                .one();
+
+        int nextSort = (maxSortCategory == null || maxSortCategory.getSort() == null) ? 1 : maxSortCategory.getSort() + 1;
+        category.setSort(nextSort);
         categoryService.save(category);
         return R.ok();
     }
@@ -51,5 +63,20 @@ public class CategoryController {
         categoryService.removeById(categoryId);
 
         return R.ok();
+    }
+
+    @PostMapping("/sort")
+    public Object sort(String categoryIds){
+        if(StrUtil.isBlank(categoryIds)){
+            return R.failed("排序数据不能为空");
+        }
+
+        try{
+            List<Long> ids = JSONUtil.toList(categoryIds, Long.class);
+            boolean success = categoryService.saveCategoryOrder(ids);
+            return success ? R.ok() : R.failed("分类排序失败");
+        }catch (Exception e){
+            return R.failed("分类排序失败:" + e.getMessage());
+        }
     }
 }

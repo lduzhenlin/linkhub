@@ -112,6 +112,14 @@
       cursor: grabbing;
     }
 
+    .nav-category-item {
+      cursor: move;
+      cursor: grab;
+    }
+    .nav-category-item:active {
+      cursor: grabbing;
+    }
+
   </style>
 </head>
 <body class="bg-theme text-theme min-h-screen transition-colors duration-200">
@@ -1209,11 +1217,15 @@
         }
       })
     }
-    // Sortable实例
-    let sortableInstance = null;
+    // Sortable实例（使用 var 避免在脚本前部调用函数时触发 TDZ）
+    var sortableInstance = null;
+    var categorySortableInstance = null;
+    var currentCategoryId = null;
 
     //加载书签数据
     function loadLinks(categoryId,linkTitle=''){
+      currentCategoryId = categoryId;
+      setActiveCategoryButton(categoryId);
       $.ajax({
         url:"/api/link/list",
         method:"get",
@@ -1328,6 +1340,85 @@
         },
         error: function() {
           toastr.error("保存排序失败，请稍后重试");
+        }
+      });
+    }
+
+    function setActiveCategoryButton(categoryId) {
+      const navButtons = $('#navList .nav-category-button');
+      if (!navButtons.length) {
+        return;
+      }
+      navButtons.removeClass('bg-purple-500 text-white').addClass('text-theme-secondary');
+      const targetButton = $(`#navList .nav-category-button[data-category-id="${categoryId}"]`);
+      if (targetButton.length) {
+        targetButton.removeClass('text-theme-secondary').addClass('bg-purple-500 text-white');
+      }
+    }
+
+    function initCategorySortable() {
+      const navListElement = document.getElementById('navList');
+      if (!navListElement) {
+        return;
+      }
+      const draggableItems = navListElement.querySelectorAll('.nav-category-item');
+      if (!draggableItems.length) {
+        return;
+      }
+
+      if (categorySortableInstance) {
+        categorySortableInstance.destroy();
+      }
+
+      categorySortableInstance = new Sortable(navListElement, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        draggable: '.nav-category-item',
+        handle: '.nav-category-item',
+        onEnd: function() {
+          saveCategoryOrder();
+        }
+      });
+    }
+
+    function saveCategoryOrder() {
+      const categoryButtons = $('#navList .nav-category-item');
+      if (!categoryButtons.length) {
+        return;
+      }
+
+      const categoryIds = [];
+      categoryButtons.each(function() {
+        const categoryId = $(this).data('category-id');
+        if (categoryId === undefined || categoryId === null) {
+          return;
+        }
+        categoryIds.push(categoryId);
+      });
+
+      if (!categoryIds.length) {
+        return;
+      }
+
+      $.ajax({
+        url: "/api/category/sort",
+        method: "post",
+        dataType: "json",
+        headers: {'TENANT-ID': localStorage.getItem("tenantId")},
+        data: {
+          categoryIds: JSON.stringify(categoryIds)
+        },
+        success: function(res) {
+          if (res.code == 0) {
+            toastr.success("分类排序已更新");
+            loadCategories(true);
+          } else {
+            toastr.error(res.msg || "分类排序保存失败");
+          }
+        },
+        error: function() {
+          toastr.error("分类排序保存失败");
         }
       });
     }
@@ -1463,8 +1554,13 @@
 
 
     // 修改 loadCategories 函数中的分类项模板
-    function loadCategories() {
+    function loadCategories(preserveCurrentCategory = false) {
       let categories = [];
+
+      const baseNavButtonClass = 'nav-category-button px-4 py-1.5 text-sm hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer';
+      const activeNavClass = 'bg-purple-500 text-white';
+      const inactiveNavClass = 'text-theme-secondary';
+      const getNavButtonClass = (isActive) => `${baseNavButtonClass} ${isActive ? activeNavClass : inactiveNavClass}`;
 
       // 添加共享链接分类（写死在前端，始终显示）
       const sharedCategory = {
@@ -1476,9 +1572,10 @@
       const navList = $('#navList');
       navList.empty();
       
+      const isSharedActive = currentCategoryId === 'shared';
       // 先添加共享链接分类
       navList.append(`
-        <button onclick="loadSharedLinks()" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">
+        <button data-category-id="shared" onclick="loadSharedLinks()" class="${getNavButtonClass(isSharedActive)}">
           <i class="fas fa-share-alt mr-1"></i>${sharedCategory.name}
         </button>
       `);
@@ -1496,10 +1593,6 @@
           success: function(res) {
             if (res.code == 0) {
               res.data.forEach(u => categories.push(u));
-              //加载书签数据
-              if(categories.length>0){
-                loadLinks(categories[0].categoryId);
-              }
             } else {
               console.log("加载用户分类失败，但共享链接分类仍可正常使用");
             }
@@ -1512,10 +1605,19 @@
       
       // 再添加其他分类
       categories.forEach(category => {
+        const isActive = currentCategoryId && category.categoryId && currentCategoryId.toString() === category.categoryId.toString();
         navList.append(`
-          <button onclick="loadLinks('${category.categoryId}')" class="px-4 py-1.5 text-sm text-theme-secondary hover:bg-card-theme rounded transition-colors whitespace-nowrap hover:cursor-pointer">${category.name}</button>
+          <button data-category-id="${category.categoryId}" onclick="loadLinks('${category.categoryId}')" class="${getNavButtonClass(isActive)} nav-category-item">${category.name}</button>
         `);
       });
+
+      if (categorySortableInstance) {
+        categorySortableInstance.destroy();
+        categorySortableInstance = null;
+      }
+      if (categories.length > 0) {
+        initCategorySortable();
+      }
 
       //生成移动端导航菜单
       const mobileNavList = $('#mobileNavList');
@@ -1568,10 +1670,31 @@
           </div>
         `);
       });
+
+      if (categories.length > 0) {
+        if (preserveCurrentCategory && currentCategoryId) {
+          if (currentCategoryId === 'shared') {
+            loadSharedLinks();
+          } else {
+            const existCategory = categories.find(category => category && category.categoryId && category.categoryId.toString() === currentCategoryId.toString());
+            if (existCategory) {
+              loadLinks(currentCategoryId);
+            } else {
+              loadLinks(categories[0].categoryId);
+            }
+          }
+        } else {
+          loadLinks(categories[0].categoryId);
+        }
+      } else if (preserveCurrentCategory && currentCategoryId === 'shared') {
+        loadSharedLinks();
+      }
     }
 
     // 加载共享链接
     function loadSharedLinks() {
+      currentCategoryId = 'shared';
+      setActiveCategoryButton('shared');
       $.ajax({
         url: "/api/link/shared",
         method: "get",

@@ -10,6 +10,7 @@ import com.qishanor.entity.Link;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qishanor.common.core.util.R;
 import com.qishanor.framework.util.DomainUtil;
+import com.qishanor.framework.util.ImageTypeValidator;
 import com.qishanor.framework.util.ProxyUrlToMultipartFile;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +90,10 @@ public class LinkController {
 
         if(StrUtil.startWithAny(link.getIconUrl(), "http", "https")){
             MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
-            String filename=fileTemplate.uploadFile(file);
+            String filename=null;
+            if(ImageTypeValidator.isCommonImage(file)){
+                filename=fileTemplate.uploadFile(file);
+            }
             link.setIcon(filename);
         }
 
@@ -129,18 +133,29 @@ public class LinkController {
             //相同域名下, 前端以前没有获取图标，则可以重新上传
             if(StrUtil.isBlank(dbLink.getIcon())&&StrUtil.startWithAny(link.getIconUrl(), "http", "https")) {
                 MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
-                String filename=fileTemplate.uploadFile(file);
+                String filename=null;
+                if(ImageTypeValidator.isCommonImage(file)){
+                    filename=fileTemplate.uploadFile(file);
+                }
                 link.setIcon(filename);
             }
-        }else{
-            //不同域名下,如果前端获取图标，则保存图标
-            if(StrUtil.startWithAny(link.getIconUrl(), "http", "https")){
-                MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
-                String filename=fileTemplate.uploadFile(file);
-                link.setIcon(filename);
-            }
+
+            //确保协议包含http或https
+            link.setUrl(DomainUtil.ensureProtocol(link.getUrl()));
+            linkService.updateById(link);
+            return R.ok();
         }
 
+
+        //不同域名下,如果前端获取图标，则保存图标
+        if(StrUtil.startWithAny(link.getIconUrl(), "http", "https")){
+            MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
+            String filename=null;
+            if(ImageTypeValidator.isCommonImage(file)){
+                filename=fileTemplate.uploadFile(file);
+            }
+            link.setIcon(filename);
+        }
 
         //确保协议包含http或https
         link.setUrl(DomainUtil.ensureProtocol(link.getUrl()));

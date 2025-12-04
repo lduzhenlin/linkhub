@@ -20,6 +20,10 @@ public class Category extends Model<Category> {
     @TableId(type =IdType.ASSIGN_ID)
     private Long categoryId;
     private String name;
+    /**
+     * 排序值，数值越小越靠前
+     */
+    private Integer sort;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
