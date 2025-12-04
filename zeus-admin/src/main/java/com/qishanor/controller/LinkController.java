@@ -1,9 +1,9 @@
 package com.qishanor.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.qishanor.Service.LinkService;
 import com.qishanor.common.file.FileTemplate;
 import com.qishanor.entity.Link;
@@ -51,6 +51,9 @@ public class LinkController {
             queryWrapper.eq(Link::getIsShared, "1");
         }
         //否则 如果用户已登录，返回共享链接 + 个人链接
+
+        // 按更新时间倒序排列（最新的在前面，这样排序后的顺序会保持）
+        queryWrapper.orderByAsc(Link::getSort).orderByDesc(Link::getCreateTime);
 
         List<Link> lists =linkService.list(queryWrapper);
         lists.forEach(link->{
@@ -234,6 +237,31 @@ public class LinkController {
             return R.ok("复制成功");
         } else {
             return R.failed("复制失败：该链接已经属于您，无需重复复制");
+        }
+    }
+
+    /**
+     * 保存链接排序
+     */
+    @SaCheckLogin
+    @PostMapping("/sort")
+    public Object saveLinkOrder(String categoryId, String linkIds) {
+        if (StrUtil.isBlank(categoryId) || StrUtil.isBlank(linkIds)) {
+            return R.failed("参数不能为空");
+        }
+        
+        try {
+            // 解析JSON数组
+            List<Long> linkIdList = JSONUtil.toList(linkIds, Long.class);
+            
+            boolean success = linkService.saveLinkOrder(categoryId, linkIdList);
+            if (success) {
+                return R.ok("排序保存成功");
+            } else {
+                return R.failed("排序保存失败");
+            }
+        } catch (Exception e) {
+            return R.failed("排序保存失败：" + e.getMessage());
         }
     }
 }

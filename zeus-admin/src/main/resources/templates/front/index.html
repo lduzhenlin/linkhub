@@ -12,6 +12,9 @@
  <!-- 消息弹框 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <!-- SortableJS for drag and drop -->
+<!--  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>-->
+  <script src="/js/Sortable.min.js"></script>
   <style>
     :root {
       --bg-dark: #1a1b1e;
@@ -91,6 +94,22 @@
     }
     .light .fa-sun {
       display: inline-block !important;
+    }
+
+    /* 拖拽排序样式 */
+    .sortable-ghost {
+      opacity: 0.4;
+      background: var(--bg-card-dark);
+    }
+    .sortable-drag {
+      opacity: 0.8;
+    }
+    .link-card {
+      cursor: move;
+      cursor: grab;
+    }
+    .link-card:active {
+      cursor: grabbing;
     }
 
   </style>
@@ -1190,6 +1209,9 @@
         }
       })
     }
+    // Sortable实例
+    let sortableInstance = null;
+
     //加载书签数据
     function loadLinks(categoryId,linkTitle=''){
       $.ajax({
@@ -1202,11 +1224,17 @@
           const linkList=$("#linkList")
           linkList.empty()
 
+          // 销毁旧的Sortable实例
+          if(sortableInstance){
+            sortableInstance.destroy();
+            sortableInstance = null;
+          }
+
           if(res.code==0){
             res.data.forEach(link=>{
               const isShared = link.isShared === '1';
               linkList.append(`
-                  <div   class="bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
+                  <div data-link-id="${link.linkId}" class="link-card bg-card-theme rounded-lg p-3 hover:ring-1 hover:ring-purple-500 transition-all duration-200 card-shadow">
                    <div class="flex items-start justify-between mb-2">
                        <div class="flex items-center space-x-2">
                          <div class="w-8 h-8 bg-theme rounded flex items-center justify-center">
@@ -1233,11 +1261,75 @@
                  </div>
               `)
             })
+            
+            // 初始化拖拽排序（仅在用户登录、不是共享链接页面、且不是搜索时启用）
+            const userId = localStorage.getItem("userId");
+            if(userId && userId !== "" && userId !== "undefined" && categoryId !== null && categoryId !== 'shared' && !linkTitle){
+              initSortable(categoryId);
+            }
           }else{
             toastr.error(res.msg)
           }
         }
       })
+    }
+
+    // 初始化拖拽排序功能
+    function initSortable(categoryId) {
+      const linkList = document.getElementById('linkList');
+      if (!linkList || sortableInstance) {
+        return;
+      }
+
+      sortableInstance = new Sortable(linkList, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        handle: '.link-card', // 整个卡片都可以拖拽
+        onEnd: function(evt) {
+          // 拖拽结束后保存新的顺序
+          saveLinkOrder(categoryId);
+        }
+      });
+    }
+
+    // 保存链接排序
+    function saveLinkOrder(categoryId) {
+      const linkCards = $('#linkList .link-card');
+      const linkIds = [];
+      
+      linkCards.each(function() {
+        const linkId = $(this).data('link-id');
+        if(linkId) {
+          linkIds.push(linkId);
+        }
+      });
+
+      if(linkIds.length === 0) {
+        return;
+      }
+
+      // 调用后端API保存排序
+      $.ajax({
+        url: "/api/link/sort",
+        method: "post",
+        dataType: "json",
+        headers: {'TENANT-ID': localStorage.getItem("tenantId")},
+        data: {
+          categoryId: categoryId,
+          linkIds: JSON.stringify(linkIds)
+        },
+        success: function(res) {
+          if(res.code == 0) {
+            toastr.success("排序已保存");
+          } else {
+            toastr.error(res.msg || "保存排序失败");
+          }
+        },
+        error: function() {
+          toastr.error("保存排序失败，请稍后重试");
+        }
+      });
     }
 
     //书签点击打开链接
@@ -1488,6 +1580,12 @@
         success: function(res) {
           const linkList = $("#linkList");
           linkList.empty();
+
+          // 销毁Sortable实例（共享链接不支持拖拽排序）
+          if(sortableInstance){
+            sortableInstance.destroy();
+            sortableInstance = null;
+          }
 
           if (res.code == 0) {
             if (res.data.length === 0) {

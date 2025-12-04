@@ -20,6 +20,7 @@ public class Link extends Model<Link> {
     private String url;
     private String description;
     private String icon;
+    private Integer sort;
     private String categoryId;
 
     /**

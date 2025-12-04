@@ -35,4 +35,12 @@ public interface LinkService extends IService<Link> {
      * @return 操作结果
      */
     boolean copySharedLink(Long sharedLinkId, String targetCategoryId, String currentUsername);
+    
+    /**
+     * 保存链接排序
+     * @param categoryId 分类ID
+     * @param linkIds 链接ID列表（按顺序）
+     * @return 操作结果
+     */
+    boolean saveLinkOrder(String categoryId, List<Long> linkIds);
 }
