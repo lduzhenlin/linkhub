@@ -1,14 +1,17 @@
 package com.qishanor.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.qishanor.entity.Category;
 import com.qishanor.Service.CategoryService;
 import com.qishanor.common.core.util.R;
+import com.qishanor.entity.req.CategoryRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +33,9 @@ public class CategoryController {
        return R.ok(categoryList);
     }
     @PostMapping()
-    public Object save(Category category){
-//        Long tenantId=(Long)StpUtil.getSession().get(CacheConstant.TENANT_ID);
-//        category.setTenantId(tenantId);
+    public Object save(@Validated CategoryRequest request){
+        Category category = new Category();
+        BeanUtil.copyProperties(request,category);
 
         Category maxSortCategory = categoryService.lambdaQuery()
                 .select(Category::getSort)
@@ -47,7 +50,10 @@ public class CategoryController {
     }
 
     @PutMapping()
-    public Object edit(Category category){
+    public Object edit(@Validated CategoryRequest request){
+        Category category = new Category();
+        BeanUtil.copyProperties(request,category);
+
         Category dbCategory=categoryService.getById(category.getCategoryId());
         if(ObjUtil.isEmpty(dbCategory)){
             return R.failed("数据不存在");

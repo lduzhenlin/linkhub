@@ -1,6 +1,7 @@
 package com.qishanor.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -9,11 +10,13 @@ import com.qishanor.common.file.FileTemplate;
 import com.qishanor.entity.Link;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qishanor.common.core.util.R;
+import com.qishanor.entity.req.LinkRequest;
 import com.qishanor.framework.util.DomainUtil;
 import com.qishanor.framework.util.ImageTypeValidator;
 import com.qishanor.framework.util.ProxyUrlToMultipartFile;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +41,6 @@ public class LinkController {
 
         // 检查用户是否登录
         boolean isLogin = StpUtil.isLogin();
-
-
 
         // 构建查询条件
         var queryWrapper = Wrappers.<Link>lambdaQuery()
@@ -83,10 +84,9 @@ public class LinkController {
 
     @SaCheckLogin
     @PostMapping
-    public Object save(Link link) throws IOException {
-        if(ObjUtil.isEmpty(link) ||StrUtil.isBlank(link.getTitle())||StrUtil.isBlank(link.getUrl())){
-            return R.failed("请填写标题和URL");
-        }
+    public Object save(@Validated LinkRequest request) throws IOException {
+        Link link=new Link();
+        BeanUtil.copyProperties(request,link);
 
         if(StrUtil.startWithAny(link.getIconUrl(), "http", "https")){
             try {
@@ -111,10 +111,10 @@ public class LinkController {
 
     @SaCheckLogin
     @PutMapping
-    public Object edit(Link link) throws IOException {
-        if(ObjUtil.isEmpty(link) ||StrUtil.isBlank(link.getTitle())||StrUtil.isBlank(link.getUrl())){
-            return R.failed("请填写标题和URL");
-        }
+    public Object edit(@Validated LinkRequest request) throws IOException {
+        Link link=new Link();
+        BeanUtil.copyProperties(request,link);
+
 
         Link dbLink=linkService.getById(link.getLinkId());
         if(ObjUtil.isEmpty(dbLink)){
