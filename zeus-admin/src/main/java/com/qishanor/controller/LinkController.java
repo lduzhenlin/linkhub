@@ -89,12 +89,17 @@ public class LinkController {
         }
 
         if(StrUtil.startWithAny(link.getIconUrl(), "http", "https")){
-            MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
-            String filename=null;
-            if(ImageTypeValidator.isCommonImage(file)){
-                filename=fileTemplate.uploadFile(file);
+            try {
+                MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
+                String filename=null;
+                if(ImageTypeValidator.isCommonImage(file)){
+                    filename=fileTemplate.uploadFile(file);
+                }
+                link.setIcon(filename);
+            }catch (Exception e){
+
             }
-            link.setIcon(filename);
+
         }
 
         //确保协议包含http或https
@@ -132,12 +137,17 @@ public class LinkController {
         if(DomainUtil.isSameDomain(link.getUrl(),dbLink.getUrl())){
             //相同域名下, 前端以前没有获取图标，则可以重新上传
             if(StrUtil.isBlank(dbLink.getIcon())&&StrUtil.startWithAny(link.getIconUrl(), "http", "https")) {
-                MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
-                String filename=null;
-                if(ImageTypeValidator.isCommonImage(file)){
-                    filename=fileTemplate.uploadFile(file);
+                try{
+                    MultipartFile file=ProxyUrlToMultipartFile.convert(link.getIconUrl());
+                    String filename=null;
+                    if(ImageTypeValidator.isCommonImage(file)){
+                        filename=fileTemplate.uploadFile(file);
+                    }
+                    link.setIcon(filename);
+                }catch(Exception e){
+
                 }
-                link.setIcon(filename);
+
             }
 
             //确保协议包含http或https
